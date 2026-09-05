@@ -45,7 +45,6 @@ jobs:
           --self-contained false
           -p:PublishSingleFile=true
           -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:EnableCompressionInSingleFile=true
           -o publish/${{ matrix.rid }}
 
       - name: Copy config
