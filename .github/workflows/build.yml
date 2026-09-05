@@ -58,7 +58,9 @@ jobs:
           $ver = if ('${{ env.VERSION }}' -ne '0.0.0') { '${{ env.VERSION }}'.TrimStart('v') } else { '0.1.0' }
           Copy-Item installer/Product.wxs publish/${{ matrix.rid }}/Product.wxs
           (Get-Content publish/${{ matrix.rid }}/Product.wxs) -replace 'Version="0.1.0"', "Version=`"$ver`"" | Set-Content publish/${{ matrix.rid }}/Product.wxs
-          wix build publish/${{ matrix.rid }}/Product.wxs -arch $arch -out publish/DevEnvManager-${{ matrix.rid }}.msi
+          Push-Location publish/${{ matrix.rid }}
+          wix build Product.wxs -arch $arch -out ../DevEnvManager-${{ matrix.rid }}.msi
+          Pop-Location
 
       - name: Upload artifact (zip)
         uses: actions/upload-artifact@v4
