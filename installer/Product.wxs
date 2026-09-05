@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Package Name="Windows 开发环境管家"
+  <Package Name="DevKit"
            Manufacturer="DevKit"
            Version="0.1.0"
            UpgradeCode="A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
@@ -26,7 +26,7 @@
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
-      <Directory Id="ProgramMenuDir" Name="开发环境管家" />
+      <Directory Id="ProgramMenuDir" Name="DevKit" />
     </StandardDirectory>
 
     <StandardDirectory Id="DesktopFolder" />
@@ -55,7 +55,7 @@
     <ComponentGroup Id="Shortcuts">
       <Component Directory="ProgramMenuDir">
         <Shortcut Id="StartMenuShortcut"
-                  Name="开发环境管家"
+                  Name="DevKit"
                   Target="[AppDir]DevKit.exe"
                   WorkingDirectory="AppDir"
                   Icon="AppIcon" IconIndex="0" />
@@ -64,7 +64,7 @@
       </Component>
       <Component Directory="DesktopFolder">
         <Shortcut Id="DesktopShortcut"
-                  Name="开发环境管家"
+                  Name="DevKit"
                   Target="[AppDir]DevKit.exe"
                   WorkingDirectory="AppDir"
                   Icon="AppIcon" IconIndex="0" />
