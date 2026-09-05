@@ -94,4 +94,41 @@ public class DependencyResolverTests
         Assert.Single(plan);
         Assert.True(plan[0].IsUserSelected);
     }
+
+    [Fact]
+    public void MultiLevelCycle_ShouldBeDetected()
+    {
+        // A -> B -> C -> A
+        var a = MakeTool("A", "B");
+        var b = MakeTool("B", "C");
+        var c = MakeTool("C", "A");
+        var all = Index(a, b, c);
+        var plan = DependencyResolver.BuildPlan(new[] { a }, all, _ => false, out var cycles);
+
+        Assert.NotEmpty(cycles);
+        Assert.Contains("A", cycles[0].CyclePath);
+        Assert.Contains("B", cycles[0].CyclePath);
+        Assert.Contains("C", cycles[0].CyclePath);
+    }
+
+    [Fact]
+    public void DuplicateDependency_ShouldNotDuplicate()
+    {
+        // A -> B, A -> C, B -> C
+        var a = MakeTool("A", "B", "C");
+        var b = MakeTool("B", "C");
+        var c = MakeTool("C");
+        var all = Index(a, b, c);
+        var plan = DependencyResolver.BuildPlan(new[] { a }, all, _ => false, out var cycles);
+
+        Assert.Empty(cycles);
+        Assert.Equal(3, plan.Count);
+        Assert.Single(plan, p => p.Tool.Name == "C");
+        // C 应该在 B 和 A 之前
+        var cIndex = plan.FindIndex(p => p.Tool.Name == "C");
+        var bIndex = plan.FindIndex(p => p.Tool.Name == "B");
+        var aIndex = plan.FindIndex(p => p.Tool.Name == "A");
+        Assert.True(cIndex < bIndex);
+        Assert.True(bIndex < aIndex);
+    }
 }

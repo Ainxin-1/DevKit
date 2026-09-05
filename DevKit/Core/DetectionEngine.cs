@@ -172,8 +172,8 @@ public class DetectionEngine
         }
     }
 
-    /// <summary>根据版本与最低版本判定状态</summary>
-    private DetectionStatus DetermineStatus(string? version, string? minVersion, out string? message)
+    /// <summary>根据版本与最低版本判定状态（internal 供测试）</summary>
+    internal static DetectionStatus DetermineStatus(string? version, string? minVersion, out string? message)
     {
         message = null;
         if (string.IsNullOrEmpty(version))
@@ -233,7 +233,7 @@ public class DetectionEngine
     private static bool IsStoreAlias(string path)
         => path.Contains("\\WindowsApps\\", StringComparison.OrdinalIgnoreCase);
 
-    private static bool TryParseVersion(string s, out Version v)
+    internal static bool TryParseVersion(string s, out Version v)
     {
         // 截取以数字开头的部分，容忍 "3.12.10"、"21.0.1" 等
         var m = Regex.Match(s, @"^\d+(\.\d+){0,3}");

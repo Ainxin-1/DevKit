@@ -21,6 +21,11 @@
     <Using Remove="System.Drawing" />
   </ItemGroup>
 
+  <!-- 测试项目可见 internal 成员 -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="DevKit.Tests" />
+  </ItemGroup>
+
   <!-- 配置文件随程序发布，用户可自行扩展 -->
   <ItemGroup>
     <Content Include="config\**\*" CopyToOutputDirectory="PreserveNewest" />

@@ -45,3 +45,24 @@ public enum InstallMethod
     /// <summary>官方脚本/命令（如 pip 的 ensurepip）</summary>
     Official
 }
+
+/// <summary>安装结果状态（区分成功/失败/取消/依赖失败/检测失败等）</summary>
+public enum InstallResultStatus
+{
+    /// <summary>未执行</summary>
+    None,
+    /// <summary>安装成功</summary>
+    Success,
+    /// <summary>安装失败</summary>
+    Failed,
+    /// <summary>用户取消</summary>
+    Cancelled,
+    /// <summary>前置依赖安装失败</summary>
+    DependencyFailed,
+    /// <summary>安装命令成功但复检未检测到</summary>
+    DetectionFailed,
+    /// <summary>已经安装</summary>
+    AlreadyInstalled,
+    /// <summary>需要用户选择（winget 候选不唯一）</summary>
+    RequiresUserSelection
+}

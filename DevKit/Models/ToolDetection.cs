@@ -45,6 +45,13 @@ public class ToolDetection : INotifyPropertyChanged
         set { if (_installResult != value) { _installResult = value; OnPropertyChanged(); } }
     }
 
+    private InstallResultStatus _installStatus = InstallResultStatus.None;
+    public InstallResultStatus InstallStatus
+    {
+        get => _installStatus;
+        set { if (_installStatus != value) { _installStatus = value; OnPropertyChanged(); } }
+    }
+
     private bool _isSelected;
     public bool IsSelected
     {

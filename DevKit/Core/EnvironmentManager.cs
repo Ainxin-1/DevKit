@@ -54,8 +54,39 @@ public static class EnvironmentManager
         return filePath;
     }
 
-    /// <summary>从文件导入环境，返回需要安装的软件名列表</summary>
+    /// <summary>导入模式</summary>
+    public enum ImportMode
+    {
+        /// <summary>补全模式：只保证软件存在，不强制版本</summary>
+        EnsurePresent,
+        /// <summary>版本复现模式：检查当前版本与目标版本，版本不同时提示用户</summary>
+        VersionMatch
+    }
+
+    /// <summary>导入结果项</summary>
+    public class ImportResultItem
+    {
+        public string Name { get; set; } = "";
+        public string? TargetVersion { get; set; }
+        public string? CurrentVersion { get; set; }
+        public bool NeedInstall { get; set; }
+        public bool VersionMismatch { get; set; }
+    }
+
+    /// <summary>从文件导入环境，返回需要安装的软件名列表（补全模式）</summary>
     public static List<string> Import(string filePath, IReadOnlyDictionary<string, ToolDetection> detections)
+    {
+        return ImportWithMode(filePath, detections, ImportMode.EnsurePresent)
+            .Where(r => r.NeedInstall)
+            .Select(r => r.Name)
+            .ToList();
+    }
+
+    /// <summary>从文件导入环境，支持补全模式和版本复现模式</summary>
+    public static List<ImportResultItem> ImportWithMode(
+        string filePath,
+        IReadOnlyDictionary<string, ToolDetection> detections,
+        ImportMode mode)
     {
         if (!File.Exists(filePath))
             throw new FileNotFoundException("环境文件不存在", filePath);
@@ -65,15 +96,57 @@ public static class EnvironmentManager
         if (env?.Tools == null)
             throw new InvalidDataException("环境文件格式无效");
 
-        var toInstall = new List<string>();
+        var results = new List<ImportResultItem>();
         foreach (var entry in env.Tools)
         {
-            if (detections.TryGetValue(entry.Name, out var det) && !det.IsInstalled)
+            var item = new ImportResultItem
             {
-                toInstall.Add(entry.Name);
+                Name = entry.Name,
+                TargetVersion = entry.Version
+            };
+
+            if (detections.TryGetValue(entry.Name, out var det) && det.IsInstalled)
+            {
+                item.CurrentVersion = det.Version;
+                item.NeedInstall = false;
+
+                if (mode == ImportMode.VersionMatch && !string.IsNullOrEmpty(entry.Version))
+                {
+                    // 版本比较：主版本号不同则标记为不匹配
+                    item.VersionMismatch = !VersionsCompatible(entry.Version, det.Version);
+                    if (item.VersionMismatch)
+                    {
+                        Logger.Info($"版本不匹配: {entry.Name} 目标={entry.Version} 当前={det.Version}");
+                    }
+                }
             }
+            else
+            {
+                item.NeedInstall = true;
+            }
+
+            results.Add(item);
         }
-        Logger.Info($"环境导入：{env.Tools.Count} 个软件中，{toInstall.Count} 个需要安装");
-        return toInstall;
+
+        var installCount = results.Count(r => r.NeedInstall);
+        var mismatchCount = results.Count(r => r.VersionMismatch);
+        Logger.Info($"环境导入（{mode}）：{env.Tools.Count} 个软件，{installCount} 个需安装，{mismatchCount} 个版本不匹配");
+        return results;
+    }
+
+    /// <summary>判断版本是否兼容（主版本号相同即兼容）</summary>
+    private static bool VersionsCompatible(string target, string? current)
+    {
+        if (string.IsNullOrEmpty(current)) return false;
+        // 取主版本号比较
+        var targetMajor = GetMajorVersion(target);
+        var currentMajor = GetMajorVersion(current);
+        return targetMajor == currentMajor;
+    }
+
+    private static string GetMajorVersion(string v)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(v, @"^(\d+)");
+        return m.Success ? m.Value : v;
     }
 }
