@@ -17,6 +17,7 @@
   <!-- 配置文件随程序发布，用户可自行扩展 -->
   <ItemGroup>
     <Content Include="config\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="app.ico" />
   </ItemGroup>
 
 </Project>
