@@ -29,7 +29,7 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Install WiX v4
-        run: dotnet tool install --global wix
+        run: dotnet tool install --global wix --version 4.*
 
       - name: Restore
         run: dotnet restore DevEnvManager/DevEnvManager.csproj
