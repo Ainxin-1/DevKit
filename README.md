@@ -1,4 +1,4 @@
-# Windows 开发环境管家 (DevEnvManager)
+﻿# Windows 开发环境管家 (DevKit)
 
 自动检测 Windows 电脑中的**开发环境**与**包管理器**，按「开发环境 / 包管理器 × ⭐常用 / 🧰不常用」分类展示，
 支持勾选、依赖分析、批量安装（优先 winget 官方源）、实时进度、日志与安装后自动复检。
@@ -23,18 +23,18 @@
   - `official`：官方命令（如 pip 的 ensurepip）
   - `bundled`：随宿主安装（npm 随 Node.js、Cargo 随 Rust）
   - `manual`：打开官方下载页引导安装（Flutter / Android SDK / Swift 等无官方 winget 包的软件）
-- **日志**：所有检测与安装命令写入日志（`%LOCALAPPDATA%\DevEnvManager\logs\`），可查看日志 / 打开日志文件
+- **日志**：所有检测与安装命令写入日志（`%LOCALAPPDATA%\DevKit\logs\`），可查看日志 / 打开日志文件
 - **系统信息**：Windows 版本、架构、CPU、内存、磁盘、管理员权限、PowerShell、winget
 - **JSON 配置驱动**：新增软件只需编辑 `config/tools.json`，无需修改代码
 
 ## 二、项目目录
 
 ```
-DevEnvManager/
-├── DevEnvManager.sln              # 解决方案
+DevKit/
+├── DevKit.sln              # 解决方案
 ├── README.md                      # 本文档
-└── DevEnvManager/
-    ├── DevEnvManager.csproj       # 项目文件（net8.0-windows / WPF）
+└── DevKit/
+    ├── DevKit.csproj       # 项目文件（net8.0-windows / WPF）
     ├── App.xaml / App.xaml.cs     # 应用入口
     ├── MainWindow.xaml(.cs)       # 主窗口（左分类 + 右列表 + 搜索筛选 + 安装进度）
     ├── config/
@@ -79,15 +79,15 @@ winget install --id Microsoft.DotNet.SDK.8 -e --silent --accept-package-agreemen
 ## 四、编译方法
 
 ```powershell
-cd DevEnvManager
+cd DevKit
 dotnet restore
-dotnet build DevEnvManager.sln -c Debug
+dotnet build DevKit.sln -c Debug
 ```
 
 开发运行：
 
 ```powershell
-dotnet run --project DevEnvManager
+dotnet run --project DevKit
 ```
 
 ## 五、Windows EXE 打包方法
@@ -95,25 +95,25 @@ dotnet run --project DevEnvManager
 **方式 A：依赖框架单文件（体积小，需目标机有 .NET 8 运行时）**
 
 ```powershell
-dotnet publish DevEnvManager/DevEnvManager.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish
+dotnet publish DevKit/DevKit.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o publish
 ```
 
 **方式 B：自包含单文件（免装运行时，体积约 100MB+）**
 
 ```powershell
-dotnet publish DevEnvManager/DevEnvManager.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish-standalone
+dotnet publish DevKit/DevKit.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish-standalone
 ```
 
-打包产物：`publish\DevEnvManager.exe` + `publish\config\tools.json`（整个 publish 目录一起分发）。
+打包产物：`publish\DevKit.exe` + `publish\config\tools.json`（整个 publish 目录一起分发）。
 
 ## 六、测试方法
 
 ### 自动验证
 ```powershell
 # 1) 编译必须 0 错误 0 警告
-dotnet build DevEnvManager.sln -c Release
+dotnet build DevKit.sln -c Release
 
-# 2) 启动程序，进程应稳定存活，日志生成于 %LOCALAPPDATA%\DevEnvManager\logs\
+# 2) 启动程序，进程应稳定存活，日志生成于 %LOCALAPPDATA%\DevKit\logs\
 ```
 
 ### 手动测试清单（对照需求）
@@ -134,7 +134,7 @@ dotnet build DevEnvManager.sln -c Release
 
 ## 七、使用说明
 
-1. 双击 `DevEnvManager.exe` 启动（首次启动自动检测，约数秒）
+1. 双击 `DevKit.exe` 启动（首次启动自动检测，约数秒）
 2. 左侧选择分类（开发环境 / 包管理器 × 常用 / 不常用），顶部可搜索、筛选（全部 / 仅未安装）
 3. 右侧勾选需要安装的软件（**已安装的不会自动勾选**）；**点击整行任意位置即可切换勾选**，勾选后复选框显示蓝色 √
 4. 点击「⬇ 安装选中」→ 查看安装计划（含自动补充的依赖）→ 确认

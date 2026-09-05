@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package Name="Windows 开发环境管家"
-           Manufacturer="DevEnvManager"
+           Manufacturer="DevKit"
            Version="0.1.0"
            UpgradeCode="A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
            Language="2052">
@@ -16,10 +16,10 @@
 
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <!-- perUser 安装目录：%LOCALAPPDATA%\Programs\DevEnvManager -->
+    <!-- perUser 安装目录：%LOCALAPPDATA%\Programs\DevKit -->
     <StandardDirectory Id="LocalAppDataFolder">
       <Directory Id="INSTALLFOLDER" Name="Programs">
-        <Directory Id="AppDir" Name="DevEnvManager">
+        <Directory Id="AppDir" Name="DevKit">
           <Directory Id="ConfigDir" Name="config" />
         </Directory>
       </Directory>
@@ -39,7 +39,7 @@
 
     <ComponentGroup Id="AppFiles" Directory="AppDir">
       <Component>
-        <File Source="DevEnvManager.exe" KeyPath="yes" />
+        <File Source="DevKit.exe" KeyPath="yes" />
       </Component>
       <Component>
         <File Source="app.ico" />
@@ -56,19 +56,19 @@
       <Component Directory="ProgramMenuDir">
         <Shortcut Id="StartMenuShortcut"
                   Name="开发环境管家"
-                  Target="[AppDir]DevEnvManager.exe"
+                  Target="[AppDir]DevKit.exe"
                   WorkingDirectory="AppDir"
                   Icon="AppIcon" IconIndex="0" />
         <RemoveFolder Id="RemoveProgramMenuDir" Directory="ProgramMenuDir" On="uninstall" />
-        <RegistryValue Root="HKCU" Key="Software\DevEnvManager" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\DevKit" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
       <Component Directory="DesktopFolder">
         <Shortcut Id="DesktopShortcut"
                   Name="开发环境管家"
-                  Target="[AppDir]DevEnvManager.exe"
+                  Target="[AppDir]DevKit.exe"
                   WorkingDirectory="AppDir"
                   Icon="AppIcon" IconIndex="0" />
-        <RegistryValue Root="HKCU" Key="Software\DevEnvManager\Shortcuts" Name="desktop" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\DevKit\Shortcuts" Name="desktop" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
 

@@ -1,4 +1,4 @@
-name: Build & Release
+﻿name: Build & Release
 
 on:
   push:
@@ -32,14 +32,14 @@ jobs:
         run: dotnet tool install --global wix --version 4.*
 
       - name: Restore
-        run: dotnet restore DevEnvManager/DevEnvManager.csproj
+        run: dotnet restore DevKit/DevKit.csproj
 
       - name: Build
-        run: dotnet build DevEnvManager/DevEnvManager.csproj -c Release --no-restore
+        run: dotnet build DevKit/DevKit.csproj -c Release --no-restore
 
       - name: Publish (single-file, framework-dependent)
         run: >
-          dotnet publish DevEnvManager/DevEnvManager.csproj
+          dotnet publish DevKit/DevKit.csproj
           -c Release
           -r ${{ matrix.rid }}
           --self-contained false
@@ -48,7 +48,7 @@ jobs:
           -o publish/${{ matrix.rid }}
 
       - name: Copy config
-        run: Copy-Item -Path DevEnvManager/config/tools.json -Destination publish/${{ matrix.rid }}/config/tools.json -Force
+        run: Copy-Item -Path DevKit/config/tools.json -Destination publish/${{ matrix.rid }}/config/tools.json -Force
 
       - name: Build MSI installer
         shell: pwsh
@@ -56,24 +56,24 @@ jobs:
           $arch = if ('${{ matrix.rid }}' -eq 'win-x64') { 'x64' } else { 'arm64' }
           $ver = if ('${{ env.VERSION }}' -ne '0.0.0') { '${{ env.VERSION }}'.TrimStart('v') } else { '0.1.0' }
           Copy-Item installer/Product.wxs publish/${{ matrix.rid }}/Product.wxs
-          Copy-Item DevEnvManager/app.ico publish/${{ matrix.rid }}/app.ico
+          Copy-Item DevKit/app.ico publish/${{ matrix.rid }}/app.ico
           (Get-Content publish/${{ matrix.rid }}/Product.wxs) -replace 'Version="0.1.0"', "Version=`"$ver`"" | Set-Content publish/${{ matrix.rid }}/Product.wxs
           Push-Location publish/${{ matrix.rid }}
-          wix build Product.wxs -arch $arch -out ../DevEnvManager-${{ matrix.rid }}.msi
+          wix build Product.wxs -arch $arch -out ../DevKit-${{ matrix.rid }}.msi
           Pop-Location
 
       - name: Upload artifact (zip)
         uses: actions/upload-artifact@v4
         with:
-          name: DevEnvManager-${{ matrix.rid }}
+          name: DevKit-${{ matrix.rid }}
           path: publish/${{ matrix.rid }}/
           retention-days: 30
 
       - name: Upload artifact (msi)
         uses: actions/upload-artifact@v4
         with:
-          name: DevEnvManager-${{ matrix.rid }}-msi
-          path: publish/DevEnvManager-${{ matrix.rid }}.msi
+          name: DevKit-${{ matrix.rid }}-msi
+          path: publish/DevKit-${{ matrix.rid }}.msi
           retention-days: 30
 
   release:
