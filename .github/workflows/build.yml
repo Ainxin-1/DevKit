@@ -32,7 +32,7 @@ jobs:
         run: dotnet tool install --global wix --version 4.*
 
       - name: Restore
-        run: dotnet restore DevKit/DevKit.csproj
+        run: dotnet restore DevKit.sln
 
       - name: Build
         run: dotnet build DevKit/DevKit.csproj -c Release --no-restore
