@@ -77,36 +77,70 @@ public class DetectConfig
     public string? EnvVar { get; set; }
 }
 
-/// <summary>安装配置</summary>
+/// <summary>安装配置（支持多方式回退，按优先级从高到低尝试）</summary>
 public class InstallConfig
 {
-    /// <summary>安装方式：winget | bundled | official | manual</summary>
-    [JsonPropertyName("method")]
-    public string Method { get; set; } = "winget";
+    /// <summary>安装方式列表（优先级从高到低）。为空时回退到旧格式单方式。</summary>
+    [JsonPropertyName("methods")]
+    public List<InstallMethodConfig>? Methods { get; set; }
 
-    /// <summary>winget 包 ID，如 "Python.Python.3.12"</summary>
+    // === 旧格式兼容字段（单方式） ===
+    [JsonPropertyName("method")]
+    public string? Method { get; set; }
+
     [JsonPropertyName("id")]
     public string? Id { get; set; }
 
-    /// <summary>备用 winget 包 ID（主 ID 查询失败时尝试）</summary>
     [JsonPropertyName("fallbackId")]
     public string? FallbackId { get; set; }
 
-    /// <summary>官方命令（method=official 时使用），如 pip 的 "python -m ensurepip --upgrade"</summary>
     [JsonPropertyName("officialCommand")]
     public string? OfficialCommand { get; set; }
 
-    /// <summary>官方下载/引导链接（method=manual 时展示给用户）</summary>
-    [JsonPropertyName("manualUrl")]
-    public string? ManualUrl { get; set; }
+    /// <summary>生效的安装方式列表（新格式优先，旧格式自动包装）</summary>
+    [JsonIgnore]
+    public List<InstallMethodConfig> EffectiveMethods
+    {
+        get
+        {
+            if (Methods is { Count: > 0 }) return Methods;
+            if (!string.IsNullOrEmpty(Method))
+                return new() { new InstallMethodConfig { Method = Method, Id = Id, FallbackId = FallbackId, OfficialCommand = OfficialCommand } };
+            return new();
+        }
+    }
+}
+
+/// <summary>单个安装方式配置</summary>
+public class InstallMethodConfig
+{
+    /// <summary>安装方式：winget | scoop | bundled | official</summary>
+    [JsonPropertyName("method")]
+    public string Method { get; set; } = "winget";
+
+    /// <summary>包 ID（winget/scoop 方式）</summary>
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
+
+    /// <summary>备用包 ID（主 ID 不存在时尝试）</summary>
+    [JsonPropertyName("fallbackId")]
+    public string? FallbackId { get; set; }
+
+    /// <summary>官方命令（official 方式）</summary>
+    [JsonPropertyName("officialCommand")]
+    public string? OfficialCommand { get; set; }
+
+    /// <summary>前置依赖的软件名，如 "Scoop"。未安装时会先递归安装。</summary>
+    [JsonPropertyName("requires")]
+    public string? Requires { get; set; }
 
     [JsonIgnore]
     public InstallMethod MethodEnum =>
         Method switch
         {
+            "scoop" => InstallMethod.Scoop,
             "bundled" => InstallMethod.Bundled,
             "official" => InstallMethod.Official,
-            "manual" => InstallMethod.Manual,
             _ => InstallMethod.Winget
         };
 }

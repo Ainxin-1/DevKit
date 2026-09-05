@@ -72,12 +72,12 @@ public class ToolDetection : INotifyPropertyChanged
     /// <summary>UI 显示用版本（未安装显示 "-"）</summary>
     public string VersionText => string.IsNullOrEmpty(Version) ? "-" : Version;
 
-    public string InstallMethodText => Tool.Install?.MethodEnum switch
+    public string InstallMethodText => Tool.Install?.EffectiveMethods.FirstOrDefault()?.MethodEnum switch
     {
         InstallMethod.Winget => "winget",
+        InstallMethod.Scoop => "scoop",
         InstallMethod.Bundled => "随宿主安装",
         InstallMethod.Official => "官方命令",
-        InstallMethod.Manual => "官方引导",
         _ => "-"
     };
 

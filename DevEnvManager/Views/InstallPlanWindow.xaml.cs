@@ -18,12 +18,12 @@ public partial class InstallPlanWindow : Window
                 Models.ToolCategory.PackageManager => "包管理器",
                 _ => "开发环境"
             },
-            Method = item.Tool.Install?.MethodEnum switch
+            Method = item.Tool.Install?.EffectiveMethods.FirstOrDefault()?.MethodEnum switch
             {
                 Models.InstallMethod.Winget => "winget",
+                Models.InstallMethod.Scoop => "scoop",
                 Models.InstallMethod.Bundled => "随宿主",
                 Models.InstallMethod.Official => "官方命令",
-                Models.InstallMethod.Manual => "官方引导",
                 _ => "-"
             },
             Reason = item.IsUserSelected ? "用户选择" : item.Reason

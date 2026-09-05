@@ -305,10 +305,11 @@ public class MainViewModel : INotifyPropertyChanged
                 int updated = 0;
                 foreach (var d in AllDetections)
                 {
+                    var firstMethod = d.Tool.Install?.EffectiveMethods.FirstOrDefault();
                     if (d.Status == DetectionStatus.Installed
-                        && d.Tool.Install?.MethodEnum == InstallMethod.Winget
-                        && !string.IsNullOrEmpty(d.Tool.Install.Id)
-                        && upgradableIds.Contains(d.Tool.Install.Id!))
+                        && firstMethod?.MethodEnum == InstallMethod.Winget
+                        && !string.IsNullOrEmpty(firstMethod?.Id)
+                        && upgradableIds.Contains(firstMethod.Id!))
                     {
                         d.Status = DetectionStatus.UpdateAvailable;
                         updated++;
@@ -360,8 +361,11 @@ public class MainViewModel : INotifyPropertyChanged
 
             await Task.Run(() =>
             {
-                var engine = new InstallEngine(p => _dispatcher.Invoke(() => ApplyProgress(p)));
-                engine.Execute(plan, detIndex, token);
+                var engine = new InstallEngine(
+                    p => _dispatcher.Invoke(() => ApplyProgress(p)),
+                    _toolIndex.Values.ToList(),
+                    detIndex);
+                engine.Execute(plan, token);
             });
 
             // 安装完成：刷新 PATH + 全量重新检测

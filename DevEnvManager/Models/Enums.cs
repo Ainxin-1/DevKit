@@ -36,10 +36,10 @@ public enum InstallMethod
 {
     /// <summary>通过 winget 安装（安装前会查询确认包 ID）</summary>
     Winget,
+    /// <summary>通过 scoop 安装（需要 scoop 已安装）</summary>
+    Scoop,
     /// <summary>随宿主软件自带（如 npm 随 Node.js 安装）</summary>
     Bundled,
     /// <summary>官方脚本/命令（如 pip 的 ensurepip）</summary>
-    Official,
-    /// <summary>官方手动引导（下载官方安装包，不在程序内自动执行）</summary>
-    Manual
+    Official
 }

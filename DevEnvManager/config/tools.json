@@ -181,8 +181,12 @@
 
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://docs.flutter.dev/get-started/install/windows"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Google.Flutter"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -203,8 +207,12 @@
 
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://developer.android.com/studio"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Google.AndroidStudio"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -332,8 +340,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://www.swift.org/install/windows/"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Swift.Toolchain"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "swift",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -350,8 +367,12 @@
 
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://www.haskell.org/ghcup/"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "GHCup.Haskell.GHCup"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -368,8 +389,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://www.lua.org/download.html"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Lua.Lua"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "lua",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -386,8 +416,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://www.mingw-w64.org/"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "niXman.Mingw"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "mingw",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -442,8 +481,11 @@
                                            "Python"
                                        ],
                       "install":  {
-                                      "method":  "official",
-                                      "officialCommand":  "python -m ensurepip --upgrade"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -635,8 +677,13 @@
                                            "Python"
                                        ],
                       "install":  {
-                                      "method":  "official",
-                                      "officialCommand":  "python -m pip install poetry"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "python -m pip install poetry",
+                                                          "requires":  "Python"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -653,8 +700,13 @@
                                            "Python"
                                        ],
                       "install":  {
-                                      "method":  "official",
-                                      "officialCommand":  "python -m pip install pipenv"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "python -m pip install pipenv",
+                                                          "requires":  "Python"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -671,8 +723,12 @@
 
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://docs.conda.io/projects/miniconda/en/latest/"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Anaconda.Miniconda3"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -707,8 +763,13 @@
 
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://vcpkg.io/en/getting-started"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "git clone https://github.com/microsoft/vcpkg.git C:\\vcpkg",
+                                                          "requires":  "Git"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -725,8 +786,13 @@
                                            "Python"
                                        ],
                       "install":  {
-                                      "method":  "official",
-                                      "officialCommand":  "python -m pip install conan"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "python -m pip install conan",
+                                                          "requires":  "Python"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -743,8 +809,12 @@
                                            "PHP"
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://getcomposer.org/download/"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Composer.Composer"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -795,8 +865,13 @@
                                            "Lua"
                                        ],
                       "install":  {
-                                      "method":  "manual",
-                                      "manualUrl":  "https://luarocks.org/"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "luarocks",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -849,8 +924,13 @@
                                            "pip"
                                        ],
                       "install":  {
-                                      "method":  "official",
-                                      "officialCommand":  "python -m pip install pdm"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "python -m pip install pdm",
+                                                          "requires":  "Python"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -867,8 +947,12 @@
 
                                        ],
                       "install":  {
-                                      "method":  "official",
-                                      "officialCommand":  "powershell -ExecutionPolicy Bypass -Command \"iwr -useb get.scoop.sh | iex\""
+                                      "methods":  [
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "powershell -ExecutionPolicy Bypass -Command \"iwr -useb get.scoop.sh | iex\""
+                                                      }
+                                                  ]
                                   }
                   },
                   {
