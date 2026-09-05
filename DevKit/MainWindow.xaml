@@ -70,6 +70,10 @@
                     <Setter TargetName="Badge" Property="Background" Value="#FBE9E7" />
                     <Setter TargetName="Txt" Property="Foreground" Value="#B71C1C" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="VersionUnknown">
+                    <Setter TargetName="Badge" Property="Background" Value="#ECEFF1" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="#546E7A" />
+                </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
     </Window.Resources>

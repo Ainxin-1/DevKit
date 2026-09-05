@@ -28,7 +28,9 @@ public enum DetectionStatus
     /// <summary>检测失败</summary>
     DetectFailed,
     /// <summary>已安装但有可用更新</summary>
-    UpdateAvailable
+    UpdateAvailable,
+    /// <summary>已找到程序，但无法确认版本（版本命令失败或正则不匹配）</summary>
+    VersionUnknown
 }
 
 /// <summary>安装方式</summary>

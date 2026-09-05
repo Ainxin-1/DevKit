@@ -140,23 +140,36 @@ public class DetectionEngine
 
     /// <summary>
     /// Android SDK 组件检测：platforms / build-tools / platform-tools / cmdline-tools / emulator / adb。
+    /// 区分"SDK 已安装"和"组件完整"，关键组件缺失时状态改为 VersionUnknown。
     /// </summary>
     private void DetectAndroidComponents(ToolDetection d, string sdkDir)
     {
         var parts = new List<string>();
-        void Add(string label, string sub)
+        var missing = new List<string>();
+        void Add(string label, string sub, bool critical)
         {
             var p = Path.Combine(sdkDir, sub);
-            parts.Add($"{label}:{(Directory.Exists(p) ? "✅" : "❌")}");
+            var exists = Directory.Exists(p);
+            parts.Add($"{label}:{(exists ? "✓" : "✗")}");
+            if (!exists && critical) missing.Add(label);
         }
-        Add("Platform-Tools", "platform-tools");
-        Add("Build-Tools", "build-tools");
-        Add("SDK Platform", "platforms");
-        Add("Cmdline-Tools", "cmdline-tools");
-        Add("Emulator", "emulator");
+        Add("Platform-Tools", "platform-tools", critical: true);
+        Add("Build-Tools", "build-tools", critical: true);
+        Add("SDK Platform", "platforms", critical: true);
+        Add("Cmdline-Tools", "cmdline-tools", critical: false);
+        Add("Emulator", "emulator", critical: false);
         var adb = Path.Combine(sdkDir, "platform-tools", "adb.exe");
-        parts.Add($"ADB:{(File.Exists(adb) ? "✅" : "❌")}");
+        var adbExists = File.Exists(adb);
+        parts.Add($"ADB:{(adbExists ? "✓" : "✗")}");
+        if (!adbExists) missing.Add("ADB");
+
         d.Message = "组件: " + string.Join(" ", parts);
+        if (missing.Count > 0)
+        {
+            d.Status = DetectionStatus.VersionUnknown;
+            d.Message += $"（缺失: {string.Join(", ", missing)}）";
+            Logger.Warn($"Android SDK 目录存在但关键组件缺失: {string.Join(", ", missing)}");
+        }
     }
 
     /// <summary>根据版本与最低版本判定状态</summary>
@@ -165,7 +178,9 @@ public class DetectionEngine
         message = null;
         if (string.IsNullOrEmpty(version))
         {
-            return DetectionStatus.Installed; // 命令存在但版本解析失败，视为已安装
+            // 命令存在但版本解析失败，标记为 VersionUnknown 而不是 Installed
+            message = "已找到程序，但无法确认版本";
+            return DetectionStatus.VersionUnknown;
         }
         if (string.IsNullOrEmpty(minVersion))
         {

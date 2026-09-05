@@ -56,7 +56,7 @@ public class ToolDetection : INotifyPropertyChanged
     public string Description => Tool.Description;
     public ToolCategory Category => Tool.CategoryEnum;
     public ToolSubcategory Subcategory => Tool.SubcategoryEnum;
-    public bool IsInstalled => Status is DetectionStatus.Installed or DetectionStatus.VersionTooLow or DetectionStatus.UpdateAvailable;
+    public bool IsInstalled => Status is DetectionStatus.Installed or DetectionStatus.VersionTooLow or DetectionStatus.UpdateAvailable or DetectionStatus.VersionUnknown;
 
     /// <summary>用于 UI 的状态文本</summary>
     public string StatusText => Status switch
@@ -65,6 +65,7 @@ public class ToolDetection : INotifyPropertyChanged
         DetectionStatus.NotInstalled => "未安装",
         DetectionStatus.VersionTooLow => "版本过低",
         DetectionStatus.UpdateAvailable => "有更新",
+        DetectionStatus.VersionUnknown => "版本未知",
         DetectionStatus.Detecting => "检测中",
         _ => "检测失败"
     };

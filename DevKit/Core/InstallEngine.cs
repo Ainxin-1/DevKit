@@ -24,6 +24,7 @@ public class InstallEngine
     private readonly Action<InstallProgress> _onProgress;
     private readonly IReadOnlyList<ToolInfo> _allTools;
     private readonly Dictionary<string, ToolDetection> _detections;
+    private readonly HashSet<string> _installing = new(StringComparer.OrdinalIgnoreCase); // 循环依赖保护
 
     public InstallEngine(Action<InstallProgress> onProgress, IReadOnlyList<ToolInfo> allTools, Dictionary<string, ToolDetection> detections)
     {
@@ -121,28 +122,42 @@ public class InstallEngine
         return (false, string.Join("；", failures));
     }
 
-    /// <summary>确保前置依赖已安装，未安装则递归安装。</summary>
+    /// <summary>确保前置依赖已安装，未安装则递归安装。带循环依赖保护。</summary>
     private bool EnsureRequirement(string depName, CancellationToken cancel)
     {
         if (_detections.TryGetValue(depName, out var det) && det.IsInstalled)
             return true;
 
-        var depTool = _allTools.FirstOrDefault(t => t.Name.Equals(depName, StringComparison.OrdinalIgnoreCase));
-        if (depTool == null)
+        // 循环依赖检测
+        if (!_installing.Add(depName))
         {
-            Logger.Error($"前置依赖 {depName} 不在工具列表中");
+            Logger.Error($"检测到依赖循环: {depName} 正在安装中，无法递归安装");
             return false;
         }
 
-        Report(depName, "安装前置", $"安装 {depName} 以满足依赖");
-        var (ok, note) = InstallOne(depTool, cancel);
-        if (ok && _detections.TryGetValue(depName, out var d))
+        try
         {
-            RedetectOne(d);
-            return d.IsInstalled;
+            var depTool = _allTools.FirstOrDefault(t => t.Name.Equals(depName, StringComparison.OrdinalIgnoreCase));
+            if (depTool == null)
+            {
+                Logger.Error($"前置依赖 {depName} 不在工具列表中");
+                return false;
+            }
+
+            Report(depName, "安装前置", $"安装 {depName} 以满足依赖");
+            var (ok, note) = InstallOne(depTool, cancel);
+            if (ok && _detections.TryGetValue(depName, out var d))
+            {
+                RedetectOne(d);
+                return d.IsInstalled;
+            }
+            Logger.Error($"前置依赖 {depName} 安装失败: {note}");
+            return false;
         }
-        Logger.Error($"前置依赖 {depName} 安装失败: {note}");
-        return false;
+        finally
+        {
+            _installing.Remove(depName);
+        }
     }
 
     private (bool Ok, string Note) InstallViaWinget(ToolInfo tool, InstallMethodConfig method, CancellationToken cancel)
@@ -164,8 +179,16 @@ public class InstallEngine
                 var candidates = WingetHelper.Search(tool.Name, max: 8);
                 if (candidates.Count == 0)
                     return (false, $"winget 中未找到 {tool.Name}");
-                id = candidates[0].Id;
-                Logger.Info($"{tool.Name} 使用搜索到的包 ID: {id}");
+
+                var (best, confident) = WingetHelper.SelectBestMatch(tool.Name, candidates);
+                if (best == null || !confident)
+                {
+                    var candidateList = string.Join("; ", candidates.Take(5).Select(c => $"{c.Name}({c.Id})"));
+                    Logger.Warn($"{tool.Name} winget 候选不唯一，无法安全自动安装: {candidateList}");
+                    return (false, $"winget 候选不唯一，需人工选择: {candidateList}");
+                }
+                id = best.Id;
+                Logger.Info($"{tool.Name} 使用评分最高的包: {best.Name} ({best.Id}) source={best.Source}");
             }
         }
 
@@ -227,21 +250,54 @@ public class InstallEngine
 
     private (bool Ok, string Note) InstallBundled(ToolInfo tool)
     {
-        Report(tool.Name, "随宿主安装", $"{tool.Name} 由宿主（{string.Join("/", tool.Dependencies)}）提供");
-        Logger.Info($"{tool.Name} 为随宿主安装，安装依赖后自动获得");
-        return (true, "随宿主自动获得，请确认依赖已安装");
+        var deps = string.Join("/", tool.Dependencies);
+        Report(tool.Name, "随宿主安装", $"{tool.Name} 由宿主（{deps}）提供，安装宿主后自动获得");
+        Logger.Info($"{tool.Name} 为随宿主安装（依赖: {deps}），将通过复检确认是否实际可用");
+        // 返回 true 表示"命令已执行"，最终结果由复检判断
+        // 如果宿主安装成功但 bundled 工具实际不存在，复检会显示"未检测到"
+        return (true, $"随宿主（{deps}）自动获得，等待复检确认");
     }
 
     private (bool Ok, string Note) InstallOfficial(ToolInfo tool, InstallMethodConfig method, CancellationToken cancel)
     {
-        var cmd = method.OfficialCommand;
-        if (string.IsNullOrEmpty(cmd))
-            return (false, "official 方式缺少官方命令");
+        // 优先使用结构化配置（officialExe + officialArgs），其次旧格式 officialCommand
+        string exe, args;
+        if (!string.IsNullOrEmpty(method.OfficialExe))
+        {
+            exe = method.OfficialExe;
+            args = method.OfficialArgs ?? "";
+        }
+        else if (!string.IsNullOrEmpty(method.OfficialCommand))
+        {
+            // 旧格式：解析但禁止危险命令链
+            var validation = ValidateOfficialCommand(method.OfficialCommand);
+            if (!validation.Ok) return (false, validation.Note);
+            (exe, args) = SplitCommand(method.OfficialCommand);
+        }
+        else
+        {
+            return (false, "official 方式缺少 officialExe 或 officialCommand");
+        }
 
-        Report(tool.Name, "执行官方命令", cmd);
-        Logger.Info($"官方安装命令: {cmd}");
+        // 安全校验：禁止通过 cmd /c、powershell -Command 等形成无限制命令链
+        var exeLower = exe.ToLowerInvariant();
+        var isScoopInstall = tool.Name.Equals("Scoop", StringComparison.OrdinalIgnoreCase)
+                             && args.Contains("get.scoop.sh", StringComparison.OrdinalIgnoreCase);
+        if ((exeLower == "cmd" || exeLower == "cmd.exe" || exeLower == "powershell" || exeLower == "powershell.exe" || exeLower == "pwsh" || exeLower == "pwsh.exe")
+            && !isScoopInstall)
+        {
+            // 允许 powershell -ExecutionPolicy Bypass -File script.ps1 这种带文件的
+            // 但禁止 -Command / -c 后面跟任意命令
+            if (args.Contains("-Command", StringComparison.OrdinalIgnoreCase) || args.Contains(" -c ", StringComparison.OrdinalIgnoreCase))
+            {
+                Logger.Error($"official 方式禁止无限制命令链: {exe} {args}");
+                return (false, "official 方式禁止通过 cmd/powershell -Command 执行任意命令");
+            }
+        }
 
-        var (exe, args) = SplitCommand(cmd);
+        Report(tool.Name, "执行官方命令", $"{exe} {args}");
+        Logger.Info($"官方安装命令: {exe} {args}");
+
         var result = CommandRunner.Run(exe, args, timeoutMs: 0,
             outputCallback: detail =>
             {
@@ -253,6 +309,26 @@ public class InstallEngine
         return result.Succeeded
             ? (true, "官方命令执行完成")
             : (false, $"命令退出码 {result.ExitCode}");
+    }
+
+    /// <summary>校验 official 命令安全性</summary>
+    private static (bool Ok, string Note) ValidateOfficialCommand(string cmd)
+    {
+        if (string.IsNullOrWhiteSpace(cmd)) return (false, "official 命令为空");
+        var lower = cmd.ToLowerInvariant();
+        // 禁止管道、命令链、重定向
+        if (lower.Contains('|') || lower.Contains("&&") || lower.Contains(";") || lower.Contains(">"))
+        {
+            // 允许 iwr -useb get.scoop.sh | iex 这种官方安装脚本？不，这也是管道
+            // 但 Scoop 的官方安装就是管道命令，需要特殊处理
+            if (lower.Contains("iwr") && lower.Contains("get.scoop.sh") && lower.Contains("iex"))
+            {
+                return (true, ""); // Scoop 官方安装脚本，白名单
+            }
+            Logger.Error($"official 命令包含危险字符: {cmd}");
+            return (false, "official 命令禁止包含管道/命令链/重定向");
+        }
+        return (true, "");
     }
 
     private static (string Exe, string Args) SplitCommand(string cmd)
@@ -270,6 +346,8 @@ public class InstallEngine
 
     private void RedetectOne(ToolDetection det)
     {
+        // 安装后刷新当前进程 PATH，使复检能立即找到新工具
+        PathManager.RefreshCurrentProcessPath();
         var engine = new DetectionEngine();
         var fresh = engine.DetectAll(new[] { det.Tool }, useWingetList: false).First();
         det.Status = fresh.Status;

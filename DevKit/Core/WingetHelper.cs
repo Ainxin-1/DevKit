@@ -77,7 +77,116 @@ public class WingetHelper
         return list;
     }
 
-    /// <summary>解析 winget 表格行（兼容框线/纯文本两种输出）</summary>
+    /// <summary>候选评分结果</summary>
+    public class ScoredCandidate
+    {
+        public PackageInfo Package { get; init; } = new();
+        public int Score { get; init; }
+        public string Reason { get; init; } = "";
+    }
+
+    /// <summary>
+    /// 从搜索候选中选择最佳匹配。返回 (选中的包, 是否确定唯一)。
+    /// 评分规则：ID 精确匹配 > 名称精确匹配 > 名称高度相似 > Publisher 合理匹配。
+    /// 无法确定唯一结果时返回 null，调用方应要求人工选择。
+    /// </summary>
+    public static (PackageInfo? Best, bool Confident) SelectBestMatch(string toolName, List<PackageInfo> candidates)
+    {
+        if (candidates.Count == 0) return (null, false);
+        if (candidates.Count == 1) return (candidates[0], true);
+
+        var scored = candidates.Select(c =>
+        {
+            int score = 0;
+            var reasons = new List<string>();
+
+            // ID 精确匹配（如 Git.Git）
+            if (c.Id.Equals(toolName, StringComparison.OrdinalIgnoreCase))
+            { score += 100; reasons.Add("ID精确匹配"); }
+
+            // ID 包含工具名（如 OpenJS.NodeJS 包含 Node）
+            if (c.Id.Contains(toolName, StringComparison.OrdinalIgnoreCase))
+            { score += 40; reasons.Add("ID包含名称"); }
+
+            // 名称精确匹配
+            if (c.Name.Equals(toolName, StringComparison.OrdinalIgnoreCase))
+            { score += 80; reasons.Add("名称精确匹配"); }
+
+            // 名称包含工具名
+            if (c.Name.Contains(toolName, StringComparison.OrdinalIgnoreCase))
+            { score += 30; reasons.Add("名称包含"); }
+
+            // 名称高度相似（去掉空格/标点后比较）
+            var normName = Normalize(c.Name);
+            var normTool = Normalize(toolName);
+            if (normName == normTool) { score += 60; reasons.Add("名称归一化匹配"); }
+            else if (normName.Contains(normTool) || normTool.Contains(normName))
+            { score += 20; reasons.Add("名称归一化包含"); }
+
+            // 官方 Publisher 特征
+            if (IsOfficialPublisher(c.Id, toolName))
+            { score += 25; reasons.Add("官方发布者"); }
+
+            // winget 源优先于 msstore
+            if (c.Source.Equals("winget", StringComparison.OrdinalIgnoreCase))
+            { score += 10; reasons.Add("winget源"); }
+
+            return new ScoredCandidate { Package = c, Score = score, Reason = string.Join(",", reasons) };
+        }).OrderByDescending(s => s.Score).ToList();
+
+        var top = scored[0];
+        Logger.Info($"候选评分: {top.Package.Name}({top.Package.Id}) score={top.Score} [{top.Reason}]");
+
+        // 最高分 >= 60 且领先第二名 >= 20，认为确定
+        if (top.Score >= 60 && (scored.Count < 2 || top.Score - scored[1].Score >= 20))
+        {
+            return (top.Package, true);
+        }
+
+        // 无法确定，返回 null
+        Logger.Warn($"无法确定 {toolName} 的唯一 winget 包，候选: {string.Join("; ", scored.Take(3).Select(s => $"{s.Package.Name}({s.Score})"))}");
+        return (null, false);
+    }
+
+    private static string Normalize(string s)
+        => new string(s.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLowerInvariant();
+
+    private static bool IsOfficialPublisher(string id, string toolName)
+    {
+        // 常见官方发布者前缀
+        var officialPrefixes = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Git"] = new[] { "Git." },
+            ["Python"] = new[] { "Python." },
+            ["Node.js"] = new[] { "OpenJS." },
+            ["JDK"] = new[] { "EclipseAdoptium.", "Oracle.", "Microsoft." },
+            ["Go"] = new[] { "GoLang." },
+            ["Rust"] = new[] { "Rustlang." },
+            [".NET SDK"] = new[] { "Microsoft.DotNet" },
+            ["Docker Desktop"] = new[] { "Docker." },
+            ["VS Code"] = new[] { "Microsoft.VisualStudioCode" },
+            ["Flutter"] = new[] { "Google." },
+            ["PHP"] = new[] { "PHP." },
+            ["Ruby"] = new[] { "RubyInstallerTeam." },
+            ["Swift"] = new[] { "Swift." },
+            ["CUDA"] = new[] { "Nvidia." },
+            ["pnpm"] = new[] { "pnpm." },
+            ["Yarn"] = new[] { "Yarn." },
+            ["Bun"] = new[] { "Oven-sh." },
+            ["uv"] = new[] { "astral-sh." },
+            ["Conda"] = new[] { "Anaconda." },
+            ["Conan"] = new[] { "JFrog." },
+            ["Chocolatey"] = new[] { "Chocolatey." },
+            ["Zed"] = new[] { "ZedIndustries." },
+        };
+        if (officialPrefixes.TryGetValue(toolName, out var prefixes))
+        {
+            return prefixes.Any(p => id.StartsWith(p, StringComparison.OrdinalIgnoreCase));
+        }
+        return false;
+    }
+
+    /// <summary>解析 winget 表格行（兼容框线/纯文本两种输出）。解析失败返回 null，不猜列。</summary>
     private static List<string>? ParseTableLine(string line)
     {
         line = line.Trim();
@@ -87,10 +196,22 @@ public class WingetHelper
                    .Replace("┘", " ").Replace("├", " ").Replace("┤", " ").Replace("┬", " ")
                    .Replace("┴", " ").Replace("┼", " ").Replace("─", " ").Trim();
         if (line.Length == 0) return null;
+        // 全是分隔线（---）跳过
+        if (line.All(c => c == '-' || c == ' ')) return null;
+
         // 按 2 个以上空格拆分列
         var parts = Regex.Split(line, @"\s{2,}");
         var cols = parts.Where(p => p.Length > 0).Select(p => p.Trim()).ToList();
-        return cols.Count >= 2 ? cols : null;
+
+        // 列数验证：winget 表格至少 2 列（Name, Id），通常 3-4 列
+        if (cols.Count < 2) return null;
+
+        // 安全检查：Id 列应包含点号（如 Git.Git）或为已知格式
+        // 但不强制，因为有些包 ID 可能没有点号
+        // 只确保第一列不是空的、不是纯数字
+        if (string.IsNullOrWhiteSpace(cols[0]) || cols[0].All(char.IsDigit)) return null;
+
+        return cols;
     }
 
     /// <summary>

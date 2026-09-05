@@ -131,18 +131,23 @@ public static class CommandRunner
                 }
             }
 
-            // 等待输出流排空
-            if (!result.Canceled && !result.TimedOut)
-            {
-                process.WaitForExit();
-                outputWait.WaitOne(3000);
-                errorWait.WaitOne(3000);
-            }
+            // 等待输出流排空（取消/超时也给短时间排空，避免输出任务泄漏）
+            process.WaitForExit(500);
+            outputWait.WaitOne(2000);
+            errorWait.WaitOne(2000);
 
             result.ExitCode = process.HasExited ? process.ExitCode : -1;
             result.Output = output.ToString().Trim();
-            if (result.Canceled) result.Output += Environment.NewLine + "(已取消)";
-            if (result.TimedOut) result.Output += Environment.NewLine + $"(执行超时 {timeoutMs}ms)";
+            if (result.Canceled)
+            {
+                result.Output += Environment.NewLine + "(用户取消)";
+                Logger.Info($"命令被用户取消: {fileName}");
+            }
+            if (result.TimedOut)
+            {
+                result.Output += Environment.NewLine + $"(执行超时 {timeoutMs}ms)";
+                Logger.Warn($"命令执行超时: {fileName} ({timeoutMs}ms)");
+            }
             Logger.Info($"命令结束: exit={result.ExitCode} canceled={result.Canceled} timeout={result.TimedOut}");
             return result;
         }

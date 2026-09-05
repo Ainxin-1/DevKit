@@ -126,9 +126,17 @@ public class InstallMethodConfig
     [JsonPropertyName("fallbackId")]
     public string? FallbackId { get; set; }
 
-    /// <summary>官方命令（official 方式）</summary>
+    /// <summary>官方命令（official 方式，旧格式兼容）。新配置请用 OfficialExe + OfficialArgs。</summary>
     [JsonPropertyName("officialCommand")]
     public string? OfficialCommand { get; set; }
+
+    /// <summary>官方可执行文件（official 方式，结构化配置）</summary>
+    [JsonPropertyName("officialExe")]
+    public string? OfficialExe { get; set; }
+
+    /// <summary>官方命令参数（official 方式，结构化配置）</summary>
+    [JsonPropertyName("officialArgs")]
+    public string? OfficialArgs { get; set; }
 
     /// <summary>前置依赖的软件名，如 "Scoop"。未安装时会先递归安装。</summary>
     [JsonPropertyName("requires")]
