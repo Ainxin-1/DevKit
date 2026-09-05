@@ -12,6 +12,8 @@
 
     <MajorUpgrade DowngradeErrorMessage="已安装更新版本。" />
 
+    <Icon Id="AppIcon" SourceFile="app.ico" />
+
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
     <!-- perUser 安装目录：%LOCALAPPDATA%\Programs\DevEnvManager -->
@@ -40,7 +42,7 @@
         <File Source="DevEnvManager.exe" KeyPath="yes" />
       </Component>
       <Component>
-        <File Source="app.ico" Id="AppIcon" />
+        <File Source="app.ico" />
       </Component>
     </ComponentGroup>
 
