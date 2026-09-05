@@ -1,7 +1,10 @@
-﻿# Windows 开发环境管家 (DevKit)
+﻿# DevKit — 开发环境工具箱
+
+**Windows Developer Environment Toolkit**
 
 自动检测 Windows 电脑中的**开发环境**与**包管理器**，按「开发环境 / 包管理器 × ⭐常用 / 🧰不常用」分类展示，
-支持勾选、依赖分析、批量安装（优先 winget 官方源）、实时进度、日志与安装后自动复检。
+支持勾选、依赖分析、批量安装（多方式自动回退：winget → scoop → 官方命令）、实时进度、日志与安装后自动复检。
+内置应用商店，可动态搜索 winget 上万个软件包。
 
 核心流程：**检测 → 分类 → 选择 → 检查依赖 → 安装 → 再检测**
 
@@ -10,19 +13,23 @@
 ## 一、功能特性
 
 - **自动检测**：检测已安装的开发环境 / 包管理器，显示状态、版本号、安装路径
-  - 状态：✅ 已安装 / ❌ 未安装 / ⚠️ 版本过低 / 🔍 检测中 / ❗ 检测失败
+  - 状态：已安装 / 未安装 / 版本过低 / 有更新 / 检测中 / 检测失败（彩色徽章）
   - 检测方式：PATH 命令 + 版本命令 + 环境变量（JAVA_HOME / ANDROID_HOME）+ 常见安装目录 + winget 已装列表
+  - 8 路并行检测，逐个完成立即渲染
 - **分类展示**：一级分类（开发环境 / 包管理器），二级分类（⭐ 常用 / 🧰 不常用）
-- **Android SDK 组件检测**：Platform-Tools / Build-Tools / SDK Platform / Cmdline-Tools / Emulator / ADB
-- **搜索与筛选**：顶部搜索框；筛选 [全部][已安装][未安装][版本过低]；☑ 只显示未安装
+- **自动检测更新**：启动时自动查询 winget upgrade，有更新的软件显示橙色"有更新"徽章
+- **搜索与筛选**：顶部搜索框；筛选 [全部][常用][不常用]；状态筛选 [全部状态][已安装][未安装][有更新]
 - **依赖分析**：自动展开依赖（如 pip → Python、pnpm → Node.js、Maven → JDK、pub → Flutter），
   已安装的依赖不重复安装，按依赖优先排序生成安装计划
 - **批量安装**：可一次勾选多项，安装前展示计划确认，实时进度 + 历史记录 + 取消支持
-- **安装方式**：
-  - `winget`：安装前验证包 ID（`winget show`），不存在时搜索候选，不盲目使用写死的 ID
+- **多方式自动回退**：每个软件支持多种安装方式，按优先级尝试，失败自动换下一个
+  - `winget`：安装前验证包 ID，不存在时搜索候选
+  - `scoop`：需要 scoop 已安装，未安装时自动先装 scoop
   - `official`：官方命令（如 pip 的 ensurepip）
   - `bundled`：随宿主安装（npm 随 Node.js、Cargo 随 Rust）
-  - `manual`：打开官方下载页引导安装（Flutter / Android SDK / Swift 等无官方 winget 包的软件）
+- **一键更新**：选中有更新的软件，点击"更新"直接升级（无确认弹窗）
+- **应用商店**：动态搜索 winget 上万个软件包，支持安装、更新、卸载
+- **实时进度条**：从 winget 输出解析下载百分比，真实进度而非装饰
 - **日志**：所有检测与安装命令写入日志（`%LOCALAPPDATA%\DevKit\logs\`），可查看日志 / 打开日志文件
 - **系统信息**：Windows 版本、架构、CPU、内存、磁盘、管理员权限、PowerShell、winget
 - **JSON 配置驱动**：新增软件只需编辑 `config/tools.json`，无需修改代码
@@ -149,27 +156,31 @@ dotnet build DevKit.sln -c Release
 
 ```json
 {
-  "name": "Python",
-  "category": "environment",        // environment | package_manager
-  "subcategory": "common",          // common(常用) | uncommon(不常用)
-  "description": "Python 解释器",
+  "name": "Swift",
+  "category": "environment",
+  "subcategory": "common",
+  "description": "Swift 语言工具链",
   "detect": {
-    "command": "python",            // 检测命令名（在 PATH 中查找）
-    "versionArgs": "--version",     // 获取版本参数（go 用 "version"）
-    "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",  // 提取版本号
-    "minVersion": "3.8",            // 低于此版本标记"版本过低"
-    "envVar": "JAVA_HOME",          // 可选：环境变量检测
-    "pathHints": ["C:\\Program Files\\Java"]  // 可选：常见安装目录
+    "command": "swift",
+    "versionArgs": "--version",
+    "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+    "pathHints": ["C:\\Library\\Developer\\Toolchains"]
   },
-  "dependencies": [],               // 依赖的软件名称
+  "dependencies": [],
   "install": {
-    "method": "winget",             // winget | bundled | official | manual
-    "id": "Python.Python.3.12",     // winget 包 ID
-    "officialCommand": "python -m ensurepip --upgrade",  // official 方式
-    "manualUrl": "https://..."      // manual 方式的官方链接
+    "methods": [
+      { "method": "winget", "id": "Swift.Toolchain" },
+      { "method": "scoop", "id": "swift", "requires": "Scoop" }
+    ]
   }
 }
 ```
+
+安装方式说明：
+- `winget`：通过 winget 安装，`id` 为包 ID
+- `scoop`：通过 scoop 安装，`requires` 指定前置依赖（如 Scoop），未安装时自动先装
+- `official`：执行官方命令，`officialCommand` 指定命令
+- `bundled`：随宿主软件自带，安装依赖后自动获得
 
 ## 九、安全设计（对照需求文档）
 
@@ -184,7 +195,7 @@ dotnet build DevKit.sln -c Release
 
 ## 十、已知限制
 
-- 安装进度为"不确定进度条"（winget 不提供精确百分比）
-- Flutter / Android SDK / Swift / Haskell 等无官方 winget 包，采用官方页面引导安装
+- 框架依赖版本需要目标机安装 .NET 8 桌面运行时
 - 部分软件的版本过低判定依赖 `minVersion` 配置，可自行调整
 - 安装后立即复检依赖当前进程 PATH 刷新；新开的终端窗口才能完整使用新工具
+- 应用商店搜索依赖 winget search 的文本解析，极端情况下可能解析异常
