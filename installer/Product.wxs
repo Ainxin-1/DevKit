@@ -4,14 +4,18 @@
            Manufacturer="DevEnvManager"
            Version="0.1.0"
            UpgradeCode="A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
-           Language="2052">
+           Language="2052"
+           InstallScope="perUser">
 
     <MajorUpgrade DowngradeErrorMessage="已安装更新版本。" />
 
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="INSTALLFOLDER" Name="DevEnvManager" />
+    <!-- perUser 安装：当前用户目录，无需管理员权限 -->
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="INSTALLFOLDER" Name="Programs" >
+        <Directory Id="AppDir" Name="DevEnvManager" />
+      </Directory>
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
@@ -25,7 +29,7 @@
       <ComponentGroupRef Id="Shortcuts" />
     </Feature>
 
-    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+    <ComponentGroup Id="AppFiles" Directory="AppDir">
       <Component>
         <File Source="DevEnvManager.exe" KeyPath="yes" />
       </Component>
@@ -38,16 +42,16 @@
       <Component Directory="ProgramMenuDir">
         <Shortcut Id="StartMenuShortcut"
                   Name="开发环境管家"
-                  Target="[INSTALLFOLDER]DevEnvManager.exe"
-                  WorkingDirectory="INSTALLFOLDER" />
+                  Target="[AppDir]DevEnvManager.exe"
+                  WorkingDirectory="AppDir" />
         <RemoveFolder Id="RemoveProgramMenuDir" Directory="ProgramMenuDir" On="uninstall" />
         <RegistryValue Root="HKCU" Key="Software\DevEnvManager" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
       <Component Directory="DesktopFolder">
         <Shortcut Id="DesktopShortcut"
                   Name="开发环境管家"
-                  Target="[INSTALLFOLDER]DevEnvManager.exe"
-                  WorkingDirectory="INSTALLFOLDER" />
+                  Target="[AppDir]DevEnvManager.exe"
+                  WorkingDirectory="AppDir" />
         <RegistryValue Root="HKCU" Key="Software\DevEnvManager\Shortcuts" Name="desktop" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
