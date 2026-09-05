@@ -5,3 +5,6 @@ publish/
 *.suo
 .vs/
 *.log
+
+smoke-test/
+publish/smoke/
