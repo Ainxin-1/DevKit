@@ -3,14 +3,16 @@
   <Package Name="DevKit"
            Manufacturer="DevKit"
            Version="0.1.0"
+           Scope="perUser"
            UpgradeCode="A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
            Language="2052">
 
-    <!-- perUser 安装：当前用户目录，无需管理员权限，快捷方式在当前用户桌面 -->
-    <SetProperty Id="ALLUSERS" Value="2" Before="CostInitialize" Sequence="both" />
-    <Property Id="MSIINSTALLPERUSER" Value="1" />
+    <!-- perUser 安装：Package Scope="perUser" 在编译期即确定单用户上下文
+         （自动设置 ALLUSERS=2 + MSIINSTALLPERUSER=1），安装到 %LOCALAPPDATA%，无需 UAC。
+         注意：不能用运行时 SetProperty 改 ALLUSERS——编译期仍是 perMachine，
+         会与 MajorUpgrade 冲突触发 1925/1603。 -->
 
-    <!-- 允许同版本升级，安装前先卸载旧版本（避免 per-machine/per-user 残留冲突） -->
+    <!-- 允许同版本升级，安装前先卸载旧版本；perUser 上下文下旧版同为 perUser，可静默升级无需提权 -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
                   DowngradeErrorMessage="已安装更新版本。"
                   Schedule="afterInstallValidate" />
