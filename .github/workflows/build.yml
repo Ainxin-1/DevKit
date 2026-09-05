@@ -37,12 +37,12 @@ jobs:
       - name: Build
         run: dotnet build DevEnvManager/DevEnvManager.csproj -c Release --no-restore
 
-      - name: Publish (single-file, self-contained)
+      - name: Publish (single-file, framework-dependent)
         run: >
           dotnet publish DevEnvManager/DevEnvManager.csproj
           -c Release
           -r ${{ matrix.rid }}
-          --self-contained true
+          --self-contained false
           -p:PublishSingleFile=true
           -p:IncludeNativeLibrariesForSelfExtract=true
           -p:EnableCompressionInSingleFile=true
