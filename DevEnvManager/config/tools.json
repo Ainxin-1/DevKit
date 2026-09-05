@@ -788,6 +788,10 @@
                       "install":  {
                                       "methods":  [
                                                       {
+                                                          "method":  "winget",
+                                                          "id":  "JFrog.Conan"
+                                                      },
+                                                      {
                                                           "method":  "official",
                                                           "officialCommand":  "python -m pip install conan",
                                                           "requires":  "Python"
