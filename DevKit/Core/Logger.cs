@@ -1,5 +1,6 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 
 namespace DevKit.Core;
 
@@ -10,6 +11,7 @@ public static class Logger
 {
     private static readonly object _lock = new();
     private static string? _logFile;
+    private static readonly UTF8Encoding Utf8WithBom = new(true);
 
     /// <summary>UI 展示用内存日志</summary>
     public static ObservableCollection<string> Entries { get; } = new();
@@ -44,7 +46,7 @@ public static class Logger
         {
             try
             {
-                File.AppendAllText(LogFile, line + Environment.NewLine);
+                File.AppendAllText(LogFile, line + Environment.NewLine, Utf8WithBom);
             }
             catch
             {
