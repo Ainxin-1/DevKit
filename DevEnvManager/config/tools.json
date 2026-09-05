@@ -1,0 +1,823 @@
+{
+  "$comment": "Windows 开发环境管家 - 软件清单配置。新增软件时只需在此文件增加一项。category: environment(开发环境) | package_manager(包管理器)；subcategory: common(⭐常用) | uncommon(🧰不常用)。安装方式 method: winget(经 winget 安装) | bundled(随宿主自带) | official(官方命令) | manual(官方引导，不自动执行)。",
+  "tools": [
+    {
+      "name": "Git",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "分布式版本控制",
+      "detect": {
+        "command": "git",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+        "pathHints": [
+          "C:\\Program Files\\Git"
+        ]
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Git.Git"
+      }
+    },
+    {
+      "name": "Python",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "Python 解释器",
+      "detect": {
+        "command": "python",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+        "minVersion": "3.8"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Python.Python.3.12"
+      }
+    },
+    {
+      "name": "Node.js",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "JavaScript 运行时（LTS）",
+      "detect": {
+        "command": "node",
+        "versionArgs": "--version",
+        "versionRegex": "v?(\\d+\\.\\d+(\\.\\d+)?)",
+        "minVersion": "20.0"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "OpenJS.NodeJS.LTS"
+      }
+    },
+    {
+      "name": "JDK",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "Java 开发工具包（Temurin 21 LTS）",
+      "detect": {
+        "command": "java",
+        "versionArgs": "-version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+        "minVersion": "17.0",
+        "envVar": "JAVA_HOME",
+        "pathHints": [
+          "C:\\Program Files\\Java",
+          "C:\\Program Files\\Eclipse Adoptium"
+        ]
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "EclipseAdoptium.Temurin.21.JDK"
+      }
+    },
+    {
+      "name": "Go",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "Go 语言工具链",
+      "detect": {
+        "command": "go",
+        "versionArgs": "version",
+        "versionRegex": "go(\\d+\\.\\d+(\\.\\d+)?)",
+        "minVersion": "1.20"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "GoLang.Go"
+      }
+    },
+    {
+      "name": "Rust",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "Rust 工具链（rustup）",
+      "detect": {
+        "command": "rustc",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+        "minVersion": "1.70",
+        "pathHints": [
+          "%USERPROFILE%\\.cargo\\bin"
+        ]
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Rustlang.Rustup"
+      }
+    },
+    {
+      "name": ".NET SDK",
+      "category": "environment",
+      "subcategory": "common",
+      "description": ".NET 跨平台开发 SDK",
+      "detect": {
+        "command": "dotnet",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+        "minVersion": "8.0"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Microsoft.DotNet.SDK.8"
+      }
+    },
+    {
+      "name": "CMake",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "跨平台构建系统",
+      "detect": {
+        "command": "cmake",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+        "minVersion": "3.20"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Kitware.CMake"
+      }
+    },
+    {
+      "name": "Flutter",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "跨平台 UI 框架（官方引导安装）",
+      "detect": {
+        "command": "flutter",
+        "versionArgs": "--version",
+        "versionRegex": "Flutter (\\d+\\.\\d+(\\.\\d+)?)",
+        "minVersion": "3.0",
+        "pathHints": [
+          "%USERPROFILE%\\flutter"
+        ]
+      },
+      "dependencies": [],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://docs.flutter.dev/get-started/install/windows"
+      }
+    },
+    {
+      "name": "Android SDK",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "Android 开发 SDK（检测 SDK 与各组件）",
+      "detect": {
+        "command": "adb",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+        "envVar": "ANDROID_HOME",
+        "pathHints": [
+          "%LOCALAPPDATA%\\Android\\Sdk"
+        ]
+      },
+      "dependencies": [],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://developer.android.com/studio"
+      }
+    },
+    {
+      "name": "Docker Desktop",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "容器平台（需要 WSL2）",
+      "detect": {
+        "command": "docker",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)",
+        "pathHints": [
+          "C:\\Program Files\\Docker"
+        ]
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Docker.DockerDesktop"
+      }
+    },
+    {
+      "name": "VS Code",
+      "category": "environment",
+      "subcategory": "common",
+      "description": "轻量代码编辑器",
+      "detect": {
+        "command": "code",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Microsoft.VisualStudioCode"
+      }
+    },
+    {
+      "name": "PHP",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "PHP 解释器",
+      "detect": {
+        "command": "php",
+        "versionArgs": "--version",
+        "versionRegex": "PHP (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "PHP.PHP.8.3"
+      }
+    },
+    {
+      "name": "Ruby",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "Ruby 解释器",
+      "detect": {
+        "command": "ruby",
+        "versionArgs": "--version",
+        "versionRegex": "ruby (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "RubyInstallerTeam.Ruby.3.2"
+      }
+    },
+    {
+      "name": "Kotlin",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "Kotlin 编译器",
+      "detect": {
+        "command": "kotlin",
+        "versionArgs": "--version",
+        "versionRegex": "kotlinc-jvm (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "JDK"
+      ],
+      "install": {
+        "method": "winget",
+        "id": "JetBrains.Kotlin"
+      }
+    },
+    {
+      "name": "Swift",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "Swift 工具链（Windows 官方引导）",
+      "detect": {
+        "command": "swift",
+        "versionArgs": "--version",
+        "versionRegex": "Swift version (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://www.swift.org/install/windows/"
+      }
+    },
+    {
+      "name": "Haskell",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "GHC 编译器（ghcup 引导）",
+      "detect": {
+        "command": "ghc",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://www.haskell.org/ghcup/"
+      }
+    },
+    {
+      "name": "Lua",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "Lua 解释器",
+      "detect": {
+        "command": "lua",
+        "versionArgs": "-v",
+        "versionRegex": "Lua (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://www.lua.org/download.html"
+      }
+    },
+    {
+      "name": "MinGW",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "Windows 版 GCC 工具链",
+      "detect": {
+        "command": "gcc",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://www.mingw-w64.org/"
+      }
+    },
+    {
+      "name": "MSYS2",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "类 Unix 环境（含 MinGW）",
+      "detect": {
+        "command": "msys2",
+        "versionArgs": "--version",
+        "pathHints": [
+          "C:\\msys64"
+        ]
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "MSYS2.MSYS2"
+      }
+    },
+    {
+      "name": "CUDA",
+      "category": "environment",
+      "subcategory": "uncommon",
+      "description": "NVIDIA CUDA 工具包",
+      "detect": {
+        "command": "nvcc",
+        "versionArgs": "--version",
+        "versionRegex": "release (\\d+\\.\\d+)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "NVIDIA.CUDA"
+      }
+    },
+    {
+      "name": "pip",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Python 包管理器",
+      "detect": {
+        "command": "pip",
+        "versionArgs": "--version",
+        "versionRegex": "pip (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Python"
+      ],
+      "install": {
+        "method": "official",
+        "officialCommand": "python -m ensurepip --upgrade"
+      }
+    },
+    {
+      "name": "npm",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Node.js 包管理器（随 Node 安装）",
+      "detect": {
+        "command": "npm",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Node.js"
+      ],
+      "install": {
+        "method": "bundled"
+      }
+    },
+    {
+      "name": "npx",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Node 包执行器（随 Node 安装）",
+      "detect": {
+        "command": "npx",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Node.js"
+      ],
+      "install": {
+        "method": "bundled"
+      }
+    },
+    {
+      "name": "pnpm",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "快速节省磁盘的 Node 包管理器",
+      "detect": {
+        "command": "pnpm",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Node.js"
+      ],
+      "install": {
+        "method": "winget",
+        "id": "pnpm.pnpm"
+      }
+    },
+    {
+      "name": "Yarn",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Node.js 包管理器",
+      "detect": {
+        "command": "yarn",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Node.js"
+      ],
+      "install": {
+        "method": "winget",
+        "id": "Yarn.Yarn"
+      }
+    },
+    {
+      "name": "Cargo",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Rust 包管理器（随 Rust 安装）",
+      "detect": {
+        "command": "cargo",
+        "versionArgs": "--version",
+        "versionRegex": "cargo (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Rust"
+      ],
+      "install": {
+        "method": "bundled"
+      }
+    },
+    {
+      "name": "Go Modules",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Go 官方包管理（随 Go 自带）",
+      "detect": {
+        "command": "go",
+        "versionArgs": "version",
+        "versionRegex": "go(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Go"
+      ],
+      "install": {
+        "method": "bundled"
+      }
+    },
+    {
+      "name": "NuGet",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": ".NET 包管理器",
+      "detect": {
+        "command": "nuget",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        ".NET SDK"
+      ],
+      "install": {
+        "method": "winget",
+        "id": "Microsoft.NuGet"
+      }
+    },
+    {
+      "name": "Maven",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Java 构建与包管理工具",
+      "detect": {
+        "command": "mvn",
+        "versionArgs": "--version",
+        "versionRegex": "Apache Maven (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "JDK"
+      ],
+      "install": {
+        "method": "winget",
+        "id": "Apache.Maven"
+      }
+    },
+    {
+      "name": "Gradle",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Java 自动化构建工具",
+      "detect": {
+        "command": "gradle",
+        "versionArgs": "--version",
+        "versionRegex": "Gradle (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "JDK"
+      ],
+      "install": {
+        "method": "winget",
+        "id": "Gradle.Gradle"
+      }
+    },
+    {
+      "name": "pub",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Dart/Flutter 包管理器（随 Flutter 安装）",
+      "detect": {
+        "command": "pub",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Flutter"
+      ],
+      "install": {
+        "method": "bundled"
+      }
+    },
+    {
+      "name": "Poetry",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "Python 依赖管理与打包",
+      "detect": {
+        "command": "poetry",
+        "versionArgs": "--version",
+        "versionRegex": "Poetry \\(version (\\d+\\.\\d+(\\.\\d+)?)\\)"
+      },
+      "dependencies": [
+        "Python"
+      ],
+      "install": {
+        "method": "official",
+        "officialCommand": "python -m pip install poetry"
+      }
+    },
+    {
+      "name": "Pipenv",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "Python 虚拟环境与依赖管理",
+      "detect": {
+        "command": "pipenv",
+        "versionArgs": "--version",
+        "versionRegex": "version (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Python"
+      ],
+      "install": {
+        "method": "official",
+        "officialCommand": "python -m pip install pipenv"
+      }
+    },
+    {
+      "name": "Conda",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "Python/R 科学计算环境管理器（Miniconda 引导）",
+      "detect": {
+        "command": "conda",
+        "versionArgs": "--version",
+        "versionRegex": "conda (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://docs.conda.io/projects/miniconda/en/latest/"
+      }
+    },
+    {
+      "name": "Bun",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "JavaScript 运行时与包管理器",
+      "detect": {
+        "command": "bun",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Oven-sh.Bun"
+      }
+    },
+    {
+      "name": "vcpkg",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "C/C++ 包管理器",
+      "detect": {
+        "command": "vcpkg",
+        "versionArgs": "version",
+        "versionRegex": "version (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://vcpkg.io/en/getting-started"
+      }
+    },
+    {
+      "name": "Conan",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "C/C++ 包管理器",
+      "detect": {
+        "command": "conan",
+        "versionArgs": "--version",
+        "versionRegex": "Conan version (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Python"
+      ],
+      "install": {
+        "method": "official",
+        "officialCommand": "python -m pip install conan"
+      }
+    },
+    {
+      "name": "Composer",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "PHP 依赖管理器",
+      "detect": {
+        "command": "composer",
+        "versionArgs": "--version",
+        "versionRegex": "Composer version (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "PHP"
+      ],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://getcomposer.org/download/"
+      }
+    },
+    {
+      "name": "RubyGems",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "Ruby 包管理器（随 Ruby 安装）",
+      "detect": {
+        "command": "gem",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Ruby"
+      ],
+      "install": {
+        "method": "bundled"
+      }
+    },
+    {
+      "name": "Bundler",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "Ruby 依赖管理（随 Ruby 安装）",
+      "detect": {
+        "command": "bundle",
+        "versionArgs": "--version",
+        "versionRegex": "Bundler version (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Ruby"
+      ],
+      "install": {
+        "method": "bundled"
+      }
+    },
+    {
+      "name": "LuaRocks",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "Lua 包管理器",
+      "detect": {
+        "command": "luarocks",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Lua"
+      ],
+      "install": {
+        "method": "manual",
+        "manualUrl": "https://luarocks.org/"
+      }
+    },
+    {
+      "name": "Cabal",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "Haskell 包管理器（随 GHC 安装）",
+      "detect": {
+        "command": "cabal",
+        "versionArgs": "--version",
+        "versionRegex": "cabal-install version (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Haskell"
+      ],
+      "install": {
+        "method": "bundled"
+      }
+    },
+    {
+      "name": "uv",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "极速 Python 包与项目管理器（Rust 编写，替代 pip/poetry）",
+      "detect": {
+        "command": "uv",
+        "versionArgs": "--version",
+        "versionRegex": "uv (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "astral-sh.uv"
+      }
+    },
+    {
+      "name": "PDM",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "现代 Python 包管理器（PEP 582，无需虚拟环境）",
+      "detect": {
+        "command": "pdm",
+        "versionArgs": "--version",
+        "versionRegex": "PDM (\\d+\\.\\d+(\\.\\d+)?)"
+      },
+      "dependencies": [
+        "Python",
+        "pip"
+      ],
+      "install": {
+        "method": "official",
+        "officialCommand": "python -m pip install pdm"
+      }
+    },
+    {
+      "name": "Scoop",
+      "category": "package_manager",
+      "subcategory": "common",
+      "description": "Windows 命令行包管理器（开发者向，便携安装）",
+      "detect": {
+        "command": "scoop",
+        "versionArgs": "--version",
+        "versionRegex": "v?(\\d+\\.\\d+\\.\\d+)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "official",
+        "officialCommand": "powershell -ExecutionPolicy Bypass -Command \"iwr -useb get.scoop.sh | iex\""
+      }
+    },
+    {
+      "name": "Chocolatey",
+      "category": "package_manager",
+      "subcategory": "uncommon",
+      "description": "Windows 老牌包管理器（choco 命令）",
+      "detect": {
+        "command": "choco",
+        "versionArgs": "--version",
+        "versionRegex": "(\\d+\\.\\d+\\.\\d+)"
+      },
+      "dependencies": [],
+      "install": {
+        "method": "winget",
+        "id": "Chocolatey.Chocolatey"
+      }
+    }
+  ]
+}
