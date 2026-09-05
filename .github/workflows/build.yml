@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '0.0.0' }}
+  RELEASE_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '0.0.0' }}
 
 jobs:
   build:
@@ -57,7 +57,7 @@ jobs:
         shell: pwsh
         run: |
           $arch = if ('${{ matrix.rid }}' -eq 'win-x64') { 'x64' } else { 'arm64' }
-          $ver = if ('${{ env.VERSION }}' -ne '0.0.0') { '${{ env.VERSION }}'.TrimStart('v') } else { '0.1.0' }
+          $ver = if ('${{ env.RELEASE_VERSION }}' -ne '0.0.0') { '${{ env.RELEASE_VERSION }}'.TrimStart('v') } else { '0.1.0' }
           Copy-Item installer/Product.wxs publish/${{ matrix.rid }}/Product.wxs
           Copy-Item DevKit/app.ico publish/${{ matrix.rid }}/app.ico
           (Get-Content publish/${{ matrix.rid }}/Product.wxs) -replace 'Version="0.1.0"', "Version=`"$ver`"" | Set-Content publish/${{ matrix.rid }}/Product.wxs
