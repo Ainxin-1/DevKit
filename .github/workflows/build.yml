@@ -8,6 +8,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '0.0.0' }}
+
 jobs:
   build:
     name: Build (${{ matrix.rid }})
@@ -24,6 +27,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
+
+      - name: Install WiX v4
+        run: dotnet tool install --global wix
 
       - name: Restore
         run: dotnet restore DevEnvManager/DevEnvManager.csproj
@@ -45,11 +51,27 @@ jobs:
       - name: Copy config
         run: Copy-Item -Path DevEnvManager/config/tools.json -Destination publish/${{ matrix.rid }}/config/tools.json -Force
 
-      - name: Upload artifact
+      - name: Build MSI installer
+        shell: pwsh
+        run: |
+          $arch = if ('${{ matrix.rid }}' -eq 'win-x64') { 'x64' } else { 'arm64' }
+          $ver = if ('${{ env.VERSION }}' -ne '0.0.0') { '${{ env.VERSION }}'.TrimStart('v') } else { '0.1.0' }
+          Copy-Item installer/Product.wxs publish/${{ matrix.rid }}/Product.wxs
+          (Get-Content publish/${{ matrix.rid }}/Product.wxs) -replace 'Version="0.1.0"', "Version=`"$ver`"" | Set-Content publish/${{ matrix.rid }}/Product.wxs
+          wix build publish/${{ matrix.rid }}/Product.wxs -arch $arch -out publish/DevEnvManager-${{ matrix.rid }}.msi
+
+      - name: Upload artifact (zip)
         uses: actions/upload-artifact@v4
         with:
           name: DevEnvManager-${{ matrix.rid }}
           path: publish/${{ matrix.rid }}/
+          retention-days: 30
+
+      - name: Upload artifact (msi)
+        uses: actions/upload-artifact@v4
+        with:
+          name: DevEnvManager-${{ matrix.rid }}-msi
+          path: publish/DevEnvManager-${{ matrix.rid }}.msi
           retention-days: 30
 
   release:
@@ -69,14 +91,18 @@ jobs:
       - name: Package zips
         run: |
           cd artifacts
-          for dir in */; do
-            name=$(basename "$dir")
-            zip -r "${name}.zip" "$dir"
+          for dir in DevEnvManager-win-*/; do
+            if [ -d "$dir" ]; then
+              name=$(basename "$dir")
+              zip -r "${name}.zip" "$dir"
+            fi
           done
-          ls -la *.zip
+          ls -la
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: artifacts/*.zip
+          files: |
+            artifacts/*.zip
+            artifacts/*-msi/*.msi
