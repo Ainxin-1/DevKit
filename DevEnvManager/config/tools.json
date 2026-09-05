@@ -18,8 +18,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Git.Git"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Git.Git"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "git",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -37,8 +46,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Python.Python.3.12"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Python.Python.3.12"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "python",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -56,8 +74,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "OpenJS.NodeJS.LTS"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "OpenJS.NodeJS.LTS"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "nodejs",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -80,8 +107,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "EclipseAdoptium.Temurin.21.JDK"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "EclipseAdoptium.Temurin.21.JDK"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "openjdk",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -99,8 +135,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "GoLang.Go"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "GoLang.Go"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "go",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -121,8 +166,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Rustlang.Rustup"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Rustlang.Rustup"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "rustup",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -140,8 +194,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Microsoft.DotNet.SDK.8"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Microsoft.DotNet.SDK.8"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "dotnet-sdk",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -159,8 +222,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Kitware.CMake"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Kitware.CMake"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "cmake",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -185,6 +257,11 @@
                                                       {
                                                           "method":  "winget",
                                                           "id":  "Google.Flutter"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "flutter",
+                                                          "requires":  "Scoop"
                                                       }
                                                   ]
                                   }
@@ -211,6 +288,11 @@
                                                       {
                                                           "method":  "winget",
                                                           "id":  "Google.AndroidStudio"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "android-sdk",
+                                                          "requires":  "Scoop"
                                                       }
                                                   ]
                                   }
@@ -232,8 +314,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Docker.DockerDesktop"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Docker.DockerDesktop"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "docker",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -250,8 +341,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Microsoft.VisualStudioCode"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Microsoft.VisualStudioCode"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "vscode",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -268,8 +368,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Zed.Zed"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Zed.Zed"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "zed",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -286,8 +395,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "PHP.PHP.8.3"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "PHP.PHP.8.3"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "php",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -304,8 +422,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "RubyInstallerTeam.Ruby.3.2"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "RubyInstallerTeam.Ruby.3.2"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "ruby",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -322,8 +449,17 @@
                                            "JDK"
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "JetBrains.Kotlin"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "JetBrains.Kotlin"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "kotlin",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -371,6 +507,11 @@
                                                       {
                                                           "method":  "winget",
                                                           "id":  "GHCup.Haskell.GHCup"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "ghcup",
+                                                          "requires":  "Scoop"
                                                       }
                                                   ]
                                   }
@@ -445,8 +586,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "MSYS2.MSYS2"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "MSYS2.MSYS2"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "msys2",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -463,8 +613,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "NVIDIA.CUDA"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Nvidia.CUDA"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "cuda",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -484,6 +643,11 @@
                                       "methods":  [
                                                       {
                                                           "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "python -m ensurepip --upgrade",
+                                                          "requires":  "Python"
                                                       }
                                                   ]
                                   }
@@ -502,7 +666,15 @@
                                            "Node.js"
                                        ],
                       "install":  {
-                                      "method":  "bundled"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "OpenJS.NodeJS"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -519,7 +691,15 @@
                                            "Node.js"
                                        ],
                       "install":  {
-                                      "method":  "bundled"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "OpenJS.NodeJS"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -536,8 +716,17 @@
                                            "Node.js"
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "pnpm.pnpm"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "pnpm.pnpm"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "pnpm",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -554,8 +743,17 @@
                                            "Node.js"
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Yarn.Yarn"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Yarn.Yarn"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "yarn",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -572,7 +770,15 @@
                                            "Rust"
                                        ],
                       "install":  {
-                                      "method":  "bundled"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Rustlang.Rustup"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -589,7 +795,15 @@
                                            "Go"
                                        ],
                       "install":  {
-                                      "method":  "bundled"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "GoLang.Go"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -606,8 +820,17 @@
                                            ".NET SDK"
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Microsoft.NuGet"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Microsoft.NuGet"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "nuget",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -624,8 +847,17 @@
                                            "JDK"
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Apache.Maven"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Apache.Maven"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "maven",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -642,8 +874,17 @@
                                            "JDK"
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Gradle.Gradle"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Gradle.Gradle"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "gradle",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -660,7 +901,15 @@
                                            "Flutter"
                                        ],
                       "install":  {
-                                      "method":  "bundled"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Google.Flutter"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -678,6 +927,10 @@
                                        ],
                       "install":  {
                                       "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Python.Poetry"
+                                                      },
                                                       {
                                                           "method":  "official",
                                                           "officialCommand":  "python -m pip install poetry",
@@ -705,6 +958,11 @@
                                                           "method":  "official",
                                                           "officialCommand":  "python -m pip install pipenv",
                                                           "requires":  "Python"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "pipenv",
+                                                          "requires":  "Scoop"
                                                       }
                                                   ]
                                   }
@@ -727,6 +985,11 @@
                                                       {
                                                           "method":  "winget",
                                                           "id":  "Anaconda.Miniconda3"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "miniconda3",
+                                                          "requires":  "Scoop"
                                                       }
                                                   ]
                                   }
@@ -745,8 +1008,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Oven-sh.Bun"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Oven-sh.Bun"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "bun",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -768,6 +1040,11 @@
                                                           "method":  "official",
                                                           "officialCommand":  "git clone https://github.com/microsoft/vcpkg.git C:\\vcpkg",
                                                           "requires":  "Git"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "vcpkg",
+                                                          "requires":  "Scoop"
                                                       }
                                                   ]
                                   }
@@ -817,6 +1094,11 @@
                                                       {
                                                           "method":  "winget",
                                                           "id":  "Composer.Composer"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "composer",
+                                                          "requires":  "Scoop"
                                                       }
                                                   ]
                                   }
@@ -835,7 +1117,15 @@
                                            "Ruby"
                                        ],
                       "install":  {
-                                      "method":  "bundled"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "RubyInstallerTeam.Ruby.3.2"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -852,7 +1142,16 @@
                                            "Ruby"
                                        ],
                       "install":  {
-                                      "method":  "bundled"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "gem install bundler",
+                                                          "requires":  "Ruby"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -874,6 +1173,10 @@
                                                           "method":  "scoop",
                                                           "id":  "luarocks",
                                                           "requires":  "Scoop"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "luarocks.luarocks"
                                                       }
                                                   ]
                                   }
@@ -892,7 +1195,15 @@
                                            "Haskell"
                                        ],
                       "install":  {
-                                      "method":  "bundled"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "bundled"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "GHCup.Haskell.GHCup"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -909,8 +1220,17 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "astral-sh.uv"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "astral-sh.uv"
+                                                      },
+                                                      {
+                                                          "method":  "scoop",
+                                                          "id":  "uv",
+                                                          "requires":  "Scoop"
+                                                      }
+                                                  ]
                                   }
                   },
                   {
@@ -929,6 +1249,10 @@
                                        ],
                       "install":  {
                                       "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "pdm-project.pdm"
+                                                      },
                                                       {
                                                           "method":  "official",
                                                           "officialCommand":  "python -m pip install pdm",
@@ -955,6 +1279,10 @@
                                                       {
                                                           "method":  "official",
                                                           "officialCommand":  "powershell -ExecutionPolicy Bypass -Command \"iwr -useb get.scoop.sh | iex\""
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "ScoopInstaller.Scoop"
                                                       }
                                                   ]
                                   }
@@ -973,8 +1301,16 @@
 
                                        ],
                       "install":  {
-                                      "method":  "winget",
-                                      "id":  "Chocolatey.Chocolatey"
+                                      "methods":  [
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Chocolatey.Chocolatey"
+                                                      },
+                                                      {
+                                                          "method":  "official",
+                                                          "officialCommand":  "powershell -Command \"Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString(\u0027https://community.chocolatey.org/install.ps1\u0027))\""
+                                                      }
+                                                  ]
                                   }
                   }
               ]
