@@ -90,21 +90,8 @@ jobs:
         with:
           path: artifacts
 
-      - name: Package zips
-        run: |
-          cd artifacts
-          for dir in DevEnvManager-win-*/; do
-            if [ -d "$dir" ]; then
-              name=$(basename "$dir")
-              zip -r "${name}.zip" "$dir"
-            fi
-          done
-          ls -la
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: |
-            artifacts/*.zip
-            artifacts/*-msi/*.msi
+          files: artifacts/*-msi/*.msi
