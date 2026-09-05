@@ -257,6 +257,9 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                         <Border CornerRadius="12" Background="{StaticResource PrimarySoftBrush}" Padding="10,4">
@@ -273,9 +276,15 @@
                             Command="{Binding ShowLogCommand}" />
                     <Button Grid.Column="3" Content="系统信息" Padding="14,7" Margin="4,0" Style="{StaticResource SecondaryButton}"
                             Command="{Binding ShowSystemInfoCommand}" />
-                    <Button Grid.Column="4" Content="更新" Padding="22,9" Margin="10,0,0,0"
+                    <Button Grid.Column="4" Content="📂 扫描项目" Padding="14,7" Margin="4,0" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ScanProjectCommand}" ToolTip="扫描项目目录，自动检测所需开发环境" />
+                    <Button Grid.Column="5" Content="📤 导出环境" Padding="14,7" Margin="4,0" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ExportEnvironmentCommand}" ToolTip="导出当前已安装的开发环境配置" />
+                    <Button Grid.Column="6" Content="📥 导入环境" Padding="14,7" Margin="4,0" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ImportEnvironmentCommand}" ToolTip="从环境文件还原开发环境" />
+                    <Button Grid.Column="7" Content="更新" Padding="22,9" Margin="10,0,0,0"
                             Style="{StaticResource PrimaryButton}" Command="{Binding UpdateCommand}" />
-                    <Button Grid.Column="5" Content="安装" Padding="22,9" Margin="8,0,0,0"
+                    <Button Grid.Column="8" Content="安装" Padding="22,9" Margin="8,0,0,0"
                             Style="{StaticResource PrimaryButton}" Command="{Binding InstallCommand}" />
                 </Grid>
             </Border>

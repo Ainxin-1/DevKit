@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -69,6 +70,9 @@ public class MainViewModel : INotifyPropertyChanged
         ShowLogCommand = new RelayCommand(_ => ShowLogWindow());
         ShowSystemInfoCommand = new RelayCommand(_ => ShowSystemInfoWindow());
         OpenLogFileCommand = new RelayCommand(_ => OpenLogFile());
+        ExportEnvironmentCommand = new RelayCommand(_ => ExportEnvironment());
+        ImportEnvironmentCommand = new RelayCommand(_ => ImportEnvironment());
+        ScanProjectCommand = new RelayCommand(_ => ScanProject());
 
         FilterOptions = new ObservableCollection<FilterOption>
         {
@@ -105,6 +109,9 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ShowLogCommand { get; }
     public ICommand ShowSystemInfoCommand { get; }
     public ICommand OpenLogFileCommand { get; }
+    public ICommand ExportEnvironmentCommand { get; }
+    public ICommand ImportEnvironmentCommand { get; }
+    public ICommand ScanProjectCommand { get; }
 
     // ---------- 筛选选项 ----------
     public ObservableCollection<FilterOption> FilterOptions { get; }
@@ -608,6 +615,138 @@ public class MainViewModel : INotifyPropertyChanged
         {
             MessageBox.Show($"无法打开日志文件：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    // ---------- 环境导出/导入 ----------
+    private void ExportEnvironment()
+    {
+        var installed = AllDetections.Where(d => d.IsInstalled).ToList();
+        if (installed.Count == 0)
+        {
+            MessageBox.Show("当前没有已安装的开发环境可导出。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var dlg = new Microsoft.Win32.SaveFileDialog
+        {
+            FileName = $"devkit-env-{DateTime.Now:yyyyMMdd-HHmmss}.json",
+            Filter = "DevKit 环境文件 (*.json)|*.json",
+            Title = "导出开发环境"
+        };
+        if (dlg.ShowDialog() != true) return;
+
+        try
+        {
+            EnvironmentManager.Export(AllDetections, dlg.FileName);
+            StatusText = $"已导出 {installed.Count} 个开发环境到 {Path.GetFileName(dlg.FileName)}";
+            MessageBox.Show($"成功导出 {installed.Count} 个开发环境配置。\n\n文件：{dlg.FileName}",
+                "导出成功", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"导出环境失败: {ex}");
+            MessageBox.Show($"导出失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void ImportEnvironment()
+    {
+        var dlg = new Microsoft.Win32.OpenFileDialog
+        {
+            Filter = "DevKit 环境文件 (*.json)|*.json",
+            Title = "导入开发环境"
+        };
+        if (dlg.ShowDialog() != true) return;
+
+        try
+        {
+            var detIndex = AllDetections.ToDictionary(d => d.Name, d => d);
+            var toInstall = EnvironmentManager.Import(dlg.FileName, detIndex);
+
+            if (toInstall.Count == 0)
+            {
+                MessageBox.Show("环境文件中的软件都已安装，无需操作。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            ClearSelection();
+            int selected = 0;
+            foreach (var name in toInstall)
+            {
+                var d = GetDetection(name);
+                if (d != null && !d.IsInstalled)
+                {
+                    d.IsSelected = true;
+                    selected++;
+                }
+            }
+            UpdateSelectedCount();
+            StatusText = $"已从环境文件勾选 {selected} 个待安装软件，点击「安装」开始还原";
+            MessageBox.Show($"环境文件包含 {toInstall.Count} 个软件，已自动勾选其中 {selected} 个未安装项。\n\n点击底部「安装」按钮即可一键还原开发环境。",
+                "导入成功", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"导入环境失败: {ex}");
+            MessageBox.Show($"导入失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    // ---------- 项目依赖检测 ----------
+    private void ScanProject()
+    {
+        var dlg = new System.Windows.Forms.FolderBrowserDialog
+        {
+            Description = "选择项目根目录，DevKit 将自动检测所需开发环境",
+            UseDescriptionForTitle = true
+        };
+        if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+
+        StatusText = $"正在扫描项目：{dlg.SelectedPath} ...";
+        _ = Task.Run(() =>
+        {
+            var result = ProjectDetector.Detect(dlg.SelectedPath);
+            _dispatcher.Invoke(() =>
+            {
+                if (result.RequiredTools.Count == 0)
+                {
+                    StatusText = "未识别到已知项目类型";
+                    MessageBox.Show("未在该目录中识别到已知的项目类型。\n\n支持：Node.js、Python、Go、Java、Rust、Flutter、PHP、Ruby、C/C++、.NET、Android、Docker、Lua、Haskell、Swift、Zig 等。",
+                        "未识别项目", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                ClearSelection();
+                int selected = 0;
+                var alreadyInstalled = new List<string>();
+                foreach (var toolName in result.RequiredTools)
+                {
+                    var d = GetDetection(toolName);
+                    if (d == null) continue;
+                    if (d.IsInstalled)
+                    {
+                        alreadyInstalled.Add(toolName);
+                    }
+                    else
+                    {
+                        d.IsSelected = true;
+                        selected++;
+                    }
+                }
+                UpdateSelectedCount();
+
+                var typeText = string.Join("、", result.ProjectTypes);
+                var toolsText = string.Join("、", result.RequiredTools);
+                StatusText = $"检测到 {typeText}，已勾选 {selected} 个待安装项";
+
+                var msg = $"检测到项目类型：{typeText}\n\n" +
+                          $"所需开发环境：{toolsText}\n\n" +
+                          $"已安装：{(alreadyInstalled.Count > 0 ? string.Join("、", alreadyInstalled) : "无")}\n" +
+                          $"待安装：{selected} 个（已自动勾选）\n\n" +
+                          $"点击底部「安装」按钮即可一键安装所需环境。";
+                MessageBox.Show(msg, "项目检测结果", MessageBoxButton.OK, MessageBoxImage.Information);
+            });
+        });
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
