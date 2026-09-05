@@ -39,6 +39,9 @@
       <Component>
         <File Source="DevEnvManager.exe" KeyPath="yes" />
       </Component>
+      <Component>
+        <File Source="app.ico" Id="AppIcon" />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="ConfigFiles" Directory="ConfigDir">
@@ -52,7 +55,8 @@
         <Shortcut Id="StartMenuShortcut"
                   Name="开发环境管家"
                   Target="[AppDir]DevEnvManager.exe"
-                  WorkingDirectory="AppDir" />
+                  WorkingDirectory="AppDir"
+                  Icon="AppIcon" IconIndex="0" />
         <RemoveFolder Id="RemoveProgramMenuDir" Directory="ProgramMenuDir" On="uninstall" />
         <RegistryValue Root="HKCU" Key="Software\DevEnvManager" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
@@ -60,7 +64,8 @@
         <Shortcut Id="DesktopShortcut"
                   Name="开发环境管家"
                   Target="[AppDir]DevEnvManager.exe"
-                  WorkingDirectory="AppDir" />
+                  WorkingDirectory="AppDir"
+                  Icon="AppIcon" IconIndex="0" />
         <RegistryValue Root="HKCU" Key="Software\DevEnvManager\Shortcuts" Name="desktop" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>

@@ -11,6 +11,7 @@
     <Version>1.0.0</Version>
     <Product>Windows 开发环境管家</Product>
     <Description>检测 Windows 开发环境与包管理器，支持依赖分析与一键安装</Description>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <!-- 配置文件随程序发布，用户可自行扩展 -->
