@@ -14,10 +14,12 @@
 
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <!-- perUser 安装：当前用户目录，无需管理员权限 -->
+    <!-- perUser 安装目录：%LOCALAPPDATA%\Programs\DevEnvManager -->
     <StandardDirectory Id="LocalAppDataFolder">
-      <Directory Id="INSTALLFOLDER" Name="Programs" >
-        <Directory Id="AppDir" Name="DevEnvManager" />
+      <Directory Id="INSTALLFOLDER" Name="Programs">
+        <Directory Id="AppDir" Name="DevEnvManager">
+          <Directory Id="ConfigDir" Name="config" />
+        </Directory>
       </Directory>
     </StandardDirectory>
 
@@ -29,6 +31,7 @@
 
     <Feature Id="Main" Title="主程序" Level="1">
       <ComponentGroupRef Id="AppFiles" />
+      <ComponentGroupRef Id="ConfigFiles" />
       <ComponentGroupRef Id="Shortcuts" />
     </Feature>
 
@@ -36,6 +39,9 @@
       <Component>
         <File Source="DevEnvManager.exe" KeyPath="yes" />
       </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="ConfigFiles" Directory="ConfigDir">
       <Component>
         <File Source="config\tools.json" />
       </Component>
