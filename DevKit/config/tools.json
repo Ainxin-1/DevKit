@@ -255,13 +255,13 @@
                       "install":  {
                                       "methods":  [
                                                       {
-                                                          "method":  "winget",
-                                                          "id":  "Google.Flutter"
-                                                      },
-                                                      {
                                                           "method":  "scoop",
                                                           "id":  "flutter",
                                                           "requires":  "Scoop"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Google.Flutter"
                                                       }
                                                   ]
                                   }
@@ -371,7 +371,7 @@
                                       "methods":  [
                                                       {
                                                           "method":  "winget",
-                                                          "id":  "Zed.Zed"
+                                                          "id":  "ZedIndustries.Zed"
                                                       },
                                                       {
                                                           "method":  "scoop",
@@ -451,13 +451,13 @@
                       "install":  {
                                       "methods":  [
                                                       {
-                                                          "method":  "winget",
-                                                          "id":  "JetBrains.Kotlin"
-                                                      },
-                                                      {
                                                           "method":  "scoop",
                                                           "id":  "kotlin",
                                                           "requires":  "Scoop"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "JetBrains.Kotlin"
                                                       }
                                                   ]
                                   }
@@ -505,13 +505,13 @@
                       "install":  {
                                       "methods":  [
                                                       {
-                                                          "method":  "winget",
-                                                          "id":  "GHCup.Haskell.GHCup"
-                                                      },
-                                                      {
                                                           "method":  "scoop",
                                                           "id":  "ghcup",
                                                           "requires":  "Scoop"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "GHCup.Haskell.GHCup"
                                                       }
                                                   ]
                                   }
@@ -533,7 +533,7 @@
                                       "methods":  [
                                                       {
                                                           "method":  "winget",
-                                                          "id":  "Lua.Lua"
+                                                          "id":  "DEVCOM.Lua"
                                                       },
                                                       {
                                                           "method":  "scoop",
@@ -559,13 +559,13 @@
                       "install":  {
                                       "methods":  [
                                                       {
-                                                          "method":  "winget",
-                                                          "id":  "niXman.Mingw"
-                                                      },
-                                                      {
                                                           "method":  "scoop",
                                                           "id":  "mingw",
                                                           "requires":  "Scoop"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "niXman.Mingw"
                                                       }
                                                   ]
                                   }
@@ -849,13 +849,13 @@
                       "install":  {
                                       "methods":  [
                                                       {
-                                                          "method":  "winget",
-                                                          "id":  "Apache.Maven"
-                                                      },
-                                                      {
                                                           "method":  "scoop",
                                                           "id":  "maven",
                                                           "requires":  "Scoop"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Apache.Maven"
                                                       }
                                                   ]
                                   }
@@ -876,13 +876,13 @@
                       "install":  {
                                       "methods":  [
                                                       {
-                                                          "method":  "winget",
-                                                          "id":  "Gradle.Gradle"
-                                                      },
-                                                      {
                                                           "method":  "scoop",
                                                           "id":  "gradle",
                                                           "requires":  "Scoop"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Gradle.Gradle"
                                                       }
                                                   ]
                                   }
@@ -904,10 +904,6 @@
                                       "methods":  [
                                                       {
                                                           "method":  "bundled"
-                                                      },
-                                                      {
-                                                          "method":  "winget",
-                                                          "id":  "Google.Flutter"
                                                       }
                                                   ]
                                   }
@@ -1092,13 +1088,13 @@
                       "install":  {
                                       "methods":  [
                                                       {
-                                                          "method":  "winget",
-                                                          "id":  "Composer.Composer"
-                                                      },
-                                                      {
                                                           "method":  "scoop",
                                                           "id":  "composer",
                                                           "requires":  "Scoop"
+                                                      },
+                                                      {
+                                                          "method":  "winget",
+                                                          "id":  "Composer.Composer"
                                                       }
                                                   ]
                                   }
@@ -1171,12 +1167,12 @@
                                       "methods":  [
                                                       {
                                                           "method":  "scoop",
-                                                          "id":  "luarocks",
-                                                          "requires":  "Scoop"
+                                                          "requires":  "Scoop",
+                                                          "id":  "luarocks"
                                                       },
                                                       {
-                                                          "method":  "winget",
-                                                          "id":  "luarocks.luarocks"
+                                                          "id":  "luarocks.luarocks",
+                                                          "method":  "winget"
                                                       }
                                                   ]
                                   }
@@ -1198,10 +1194,6 @@
                                       "methods":  [
                                                       {
                                                           "method":  "bundled"
-                                                      },
-                                                      {
-                                                          "method":  "winget",
-                                                          "id":  "GHCup.Haskell.GHCup"
                                                       }
                                                   ]
                                   }

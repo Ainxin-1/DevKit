@@ -56,8 +56,10 @@ public class ToolsJsonTests
         {
             Assert.NotNull(tool.Install);
             var methods = tool.Install.EffectiveMethods;
-            Assert.True(methods.Count >= 2,
-                $"{tool.Name} 安装方式少于2种：{methods.Count}");
+            // bundled 方式的软件随宿主安装，允许只有 1 种方式
+            var isBundledOnly = methods.Count == 1 && methods[0].Method == "bundled";
+            Assert.True(methods.Count >= 2 || isBundledOnly,
+                $"{tool.Name} 安装方式少于2种：{methods.Count}（非bundled）");
         }
     }
 
