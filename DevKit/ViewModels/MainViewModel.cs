@@ -464,10 +464,18 @@ public class MainViewModel : INotifyPropertyChanged
 
                 int exitCode = await Task.Run(() =>
                     WingetHelper.Upgrade(id,
-                        output => _dispatcher.Invoke(() =>
+                        outputCallback: output => _dispatcher.Invoke(() =>
                         {
                             ProgressDetail = output;
                             ParseProgress(output);
+                        }),
+                        downloadCallback: snap => _dispatcher.Invoke(() =>
+                        {
+                            if (snap.BytesReceived > 0)
+                            {
+                                ProgressDetail = $"下载中：已下载 {snap.SizeText}（{snap.SpeedText}）";
+                                ProgressIsIndeterminate = true;
+                            }
                         }),
                         cancel: token));
 
@@ -525,6 +533,12 @@ public class MainViewModel : INotifyPropertyChanged
             ProgressValue = 0;
             ProgressIsIndeterminate = true;
             InstallHistory.Add($"{(p.Stage == "完成" ? "✅" : p.Stage == "失败" ? "❌" : "⏹")} {p.ToolName}：{p.Detail}");
+        }
+        else if (p.Stage == "下载中")
+        {
+            // 下载阶段：winget 重定向输出不发进度条，靠文件大小监控
+            // ProgressDetail 已由 InstallEngine 格式化为 "已下载 XX MB（YY MB/s）"
+            ProgressIsIndeterminate = true;
         }
         else
         {

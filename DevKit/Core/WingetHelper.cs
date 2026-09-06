@@ -1,6 +1,29 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.IO;
+using System.Text.RegularExpressions;
 
 namespace DevKit.Core;
+
+/// <summary>下载进度快照（已下载字节数 + 速度，带格式化文本）</summary>
+public class DownloadSnapshot
+{
+    public long BytesReceived { get; set; }
+    public double SpeedBps { get; set; }
+
+    public string SizeText => BytesReceived switch
+    {
+        < 1024 => $"{BytesReceived} B",
+        < 1024 * 1024 => $"{BytesReceived / 1024.0:F1} KB",
+        < 1024L * 1024 * 1024 => $"{BytesReceived / (1024.0 * 1024):F1} MB",
+        _ => $"{BytesReceived / (1024.0 * 1024 * 1024):F2} GB"
+    };
+
+    public string SpeedText => SpeedBps switch
+    {
+        < 1024 => $"{SpeedBps:F0} B/s",
+        < 1024 * 1024 => $"{SpeedBps / 1024.0:F1} KB/s",
+        _ => $"{SpeedBps / (1024.0 * 1024):F1} MB/s"
+    };
+}
 
 /// <summary>
 /// winget 封装：检测可用性、查询包 ID、安装、读取已安装列表。
@@ -214,19 +237,107 @@ public class WingetHelper
         return cols;
     }
 
+    // ---------- 下载进度监控 ----------
+    // winget 在 stdout 被重定向时自动禁用动态进度条输出（非 TTY 检测），
+    // 所以 ParseProgress 从文本中匹配不到 XX%。这里改为监控 winget 临时下载
+    // 目录中新增文件的大小变化来计算已下载字节数和速度。
+
+    /// <summary>winget 可能的临时下载目录（按版本不同路径有差异）</summary>
+    private static string[] GetWinGetTempDirs()
+    {
+        var temp = Path.GetTempPath();
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        return new[]
+        {
+            Path.Combine(temp, "WinGet", "Packages"),
+            Path.Combine(temp, "WinGet"),
+            Path.Combine(localAppData, "Temp", "WinGet", "Packages"),
+            Path.Combine(localAppData, "Temp", "WinGet"),
+        };
+    }
+
+    /// <summary>扫描下载目录中新增文件的总大小（排除启动前已存在的文件）</summary>
+    private static long ScanDownloadedBytes(string[] dirs, HashSet<string> snapshot)
+    {
+        long total = 0;
+        foreach (var dir in dirs)
+        {
+            if (!Directory.Exists(dir)) continue;
+            string[] files;
+            try { files = Directory.GetFiles(dir, "*", SearchOption.AllDirectories); }
+            catch { continue; }
+            foreach (var f in files)
+            {
+                if (snapshot.Contains(f)) continue;
+                try { total += new FileInfo(f).Length; } catch { }
+            }
+        }
+        return total;
+    }
+
+    /// <summary>运行 winget 命令并附带下载进度监控</summary>
+    private static int RunWingetWithMonitor(string args, Action<string>? outputCallback,
+        Action<DownloadSnapshot>? downloadCallback, CancellationToken? cancel)
+    {
+        var cts = cancel ?? CancellationToken.None;
+
+        // 启动前记录下载目录快照（用于区分哪些是本次下载的新文件）
+        var dirs = GetWinGetTempDirs();
+        var snapshot = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var dir in dirs)
+            if (Directory.Exists(dir))
+                try { foreach (var f in Directory.GetFiles(dir, "*", SearchOption.AllDirectories)) snapshot.Add(f); } catch { }
+
+        // 启动下载进度监控任务
+        using var monitorCts = CancellationTokenSource.CreateLinkedTokenSource(cts);
+        long lastBytes = 0;
+        DateTime lastTime = DateTime.MinValue;
+        var monitor = Task.Run(async () =>
+        {
+            while (!monitorCts.IsCancellationRequested)
+            {
+                var bytes = ScanDownloadedBytes(dirs, snapshot);
+                var now = DateTime.Now;
+                double speed = 0;
+                if (lastTime != DateTime.MinValue)
+                {
+                    var elapsed = (now - lastTime).TotalSeconds;
+                    if (elapsed > 0.01) speed = (bytes - lastBytes) / elapsed;
+                }
+                lastTime = now;
+                lastBytes = bytes;
+                downloadCallback?.Invoke(new DownloadSnapshot
+                {
+                    BytesReceived = bytes,
+                    SpeedBps = Math.Max(0, speed)
+                });
+                try { await Task.Delay(800, monitorCts.Token); } catch { break; }
+            }
+        }, monitorCts.Token);
+
+        try
+        {
+            var r = CommandRunner.Run(WingetExe, args, timeoutMs: 0,
+                outputCallback: outputCallback, cancelToken: cancel);
+            return r.ExitCode;
+        }
+        finally
+        {
+            monitorCts.Cancel();
+            try { monitor.Wait(1000); } catch { }
+        }
+    }
+
     /// <summary>
-    /// 安装包（实时输出回调）。返回退出码。
+    /// 安装包（实时输出回调 + 下载进度监控）。返回退出码。
     /// </summary>
-    public static int Install(string id, Action<string>? outputCallback = null, CancellationToken? cancel = null)
+    public static int Install(string id, Action<string>? outputCallback = null,
+        Action<DownloadSnapshot>? downloadCallback = null, CancellationToken? cancel = null)
     {
         Logger.Info($"winget 安装: {id}");
-        var r = CommandRunner.Run(
-            WingetExe,
+        return RunWingetWithMonitor(
             $"install -e --id \"{id}\" --silent --accept-package-agreements --accept-source-agreements --disable-interactivity",
-            timeoutMs: 0,          // 安装不设超时，由用户取消
-            outputCallback: outputCallback,
-            cancelToken: cancel);
-        return r.ExitCode;
+            outputCallback, downloadCallback, cancel);
     }
 
     /// <summary>已安装软件 ID 集合（用于辅助检测：部分工具不在 PATH 但已通过 winget 安装）</summary>
@@ -285,18 +396,15 @@ public class WingetHelper
     }
 
     /// <summary>
-    /// 升级单个 winget 包（实时输出回调）。返回退出码。
+    /// 升级单个 winget 包（实时输出回调 + 下载进度监控）。返回退出码。
     /// </summary>
-    public static int Upgrade(string id, Action<string>? outputCallback = null, CancellationToken? cancel = null)
+    public static int Upgrade(string id, Action<string>? outputCallback = null,
+        Action<DownloadSnapshot>? downloadCallback = null, CancellationToken? cancel = null)
     {
         Logger.Info($"winget 升级: {id}");
-        var r = CommandRunner.Run(
-            WingetExe,
+        return RunWingetWithMonitor(
             $"upgrade -e --id \"{id}\" --silent --accept-package-agreements --accept-source-agreements --disable-interactivity",
-            timeoutMs: 0,
-            outputCallback: outputCallback,
-            cancelToken: cancel);
-        return r.ExitCode;
+            outputCallback, downloadCallback, cancel);
     }
 
     /// <summary>

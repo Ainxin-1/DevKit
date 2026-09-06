@@ -213,12 +213,19 @@ public class InstallEngine
             }
         }
 
-        Report(tool.Name, "安装中", $"winget install {id}");
-        var exitCode = WingetHelper.Install(id, detail =>
-        {
-            var clean = Regex.Replace(detail, @"\x1B\[[0-9;]*[A-Za-z]", "").Trim();
-            if (clean.Length > 0) Report(tool.Name, "安装中", clean);
-        }, cancel);
+        Report(tool.Name, "下载中", $"winget 下载 {id}");
+        var exitCode = WingetHelper.Install(id,
+            outputCallback: detail =>
+            {
+                var clean = Regex.Replace(detail, @"\x1B\[[0-9;]*[A-Za-z]", "").Trim();
+                if (clean.Length > 0) Report(tool.Name, "安装中", clean);
+            },
+            downloadCallback: snap =>
+            {
+                if (snap.BytesReceived > 0)
+                    Report(tool.Name, "下载中", $"已下载 {snap.SizeText}（{snap.SpeedText}）");
+            },
+            cancel: cancel);
 
         return exitCode == 0
             ? (true, $"winget 安装完成（{id}）", InstallResultStatus.Success)
